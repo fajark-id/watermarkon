@@ -294,7 +294,7 @@ btnTemplates.forEach(btn => {
 // =========================================================================
 btnReset.addEventListener('click', () => {
     watermarkText.value = 'DOKUMEN COPY';
-    watermarkStyle.value = 'scattered';
+    watermarkStyle.value = 'center'; /* Reset kembali ke Cabang 1 */
     opacitySlider.value = 50;
     opacityVal.innerText = '50%';
     fontSizeInput.value = 32;
@@ -316,7 +316,7 @@ btnReset.addEventListener('click', () => {
 });
 
 // =========================================================================
-// 10. EKSPORT / DOWNLOAD FILE
+// 10. EXPORT / DOWNLOAD FILE
 // =========================================================================
 btnSave.addEventListener('click', () => {
     const canvas = document.getElementById('papanWatermark');
