@@ -11,6 +11,9 @@
     <header class="main-header">
         <div class="logo-area">
             <h1>WATERMARKON 🍉</h1>
+            <button id="themeToggle" class="flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors border rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 dark-btn-spec">
+                <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
+            </button>
             <p>Watermark otomatis langsung dari browser.</p>
         </div>
         <div class="header-controls">
@@ -32,6 +35,13 @@
             
             <p class="note">Pemrosesan lokal di memori browser, dokumen Anda tidak diupload ke server mana pun.</p>
 
+            <div class="flex items-center justify-center gap-2 p-2 mb-3 rounded-lg bg-slate-100 dark-zoom-spec">
+                <button id="btnZoomOut" class="px-3 py-1 font-bold bg-white border rounded shadow-sm hover:bg-slate-50 text-slate-700">-</button>
+                <span id="zoomLabel" class="text-sm font-medium text-center text-slate-600 min-w-[50px]">100%</span>
+                <button id="btnZoomIn" class="px-3 py-1 font-bold bg-white border rounded shadow-sm hover:bg-slate-50 text-slate-700">+</button>
+                <button id="btnZoomFit" class="px-2 py-1 text-xs text-slate-600 bg-slate-200 rounded hover:bg-slate-300">Auto Fit</button>
+            </div>
+            
             <div class="preview-container">
                 <div class="zoom-controls">
                     <button id="zoomOut">-</button>
