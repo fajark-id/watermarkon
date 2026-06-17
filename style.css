@@ -1,7 +1,292 @@
+/* --- RESET & BASE STYLING --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #fafafa;
-    color: #333;
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: #f5f7fb;
+    color: #2c3e50;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- HEADER UTAMA --- */
+.main-header {
+    background-color: #ffffff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.logo-area h1 {
+    font-size: 1.5rem;
+    color: #2e7d32; /* Warna Hijau Semangka */
+}
+
+.logo-area p {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+}
+
+.header-controls button {
+    background: #f1f2f6;
+    border: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+}
+
+/* --- KONTEN UTAMA (DUA PANEL PC) --- */
+.app-container {
+    display: flex;
+    flex: 1;
+    height: calc(100vh - 70px); /* Sisa layar setelah dipotong header */
+}
+
+/* PANEL KIRI (Preview Dokumen) */
+.panel-left {
+    flex: 1.2; /* Lebih lebar sedikit dari panel kanan */
+    padding: 1.5rem;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: #ffffff;
+}
+
+/* PANEL KANAN (Kontrol) */
+.panel-right {
+    flex: 0.8;
+    padding: 1.5rem;
+    background-color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    overflow-y: auto; /* Jika kontrol panjang, bisa di-scroll ke bawah */
+}
+
+h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+/* --- AREA UPLOAD DOKUMEN --- */
+.upload-zone {
+    border: 2px dashed #b4c6d8;
+    background-color: #f8fafc;
+    padding: 2rem;
     text-align: center;
-    padding-top: 50px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.upload-zone:hover {
+    border-color: #2e7d32;
+    background-color: #f0fdf4;
+}
+
+.upload-zone p {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.upload-zone span {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.note {
+    font-size: 0.8rem;
+    color: #e74c3c; /* Warna merah peringatan aman */
+    background-color: #fdedec;
+    padding: 0.5rem;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* --- PREVIEW BOX --- */
+.preview-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ecf0f1;
+    overflow: hidden;
+}
+
+.zoom-controls {
+    background: #ffffff;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.zoom-controls button {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.document-preview {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #95a5a6;
+    font-style: italic;
+    padding: 1rem;
+}
+
+/* --- FORM KONTROL WATERMARK (PANEL KANAN) --- */
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.control-group label {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.control-group h3 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.25rem;
+}
+
+select, input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+/* Template Teks Tombol Kecil */
+.text-templates {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+}
+
+.btn-template {
+    background: #e2e8f0;
+    border: none;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-template:hover {
+    background: #cbd5e1;
+}
+
+/* Palet Bulat Warna */
+.color-palette {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-top: 0.25rem;
+}
+
+.color-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+.color-circle.active {
+    border-color: #2c3e50;
+    transform: scale(1.1);
+}
+
+/* --- TOMBOL AKSI UTAMA --- */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: auto; /* Mendorong tombol ke posisi paling bawah panel */
+}
+
+button.btn-primary {
+    background-color: #2e7d32;
+    color: white;
+    border: none;
+    padding: 0.9rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(46, 125, 50, 0.2);
+}
+
+button.btn-primary:hover {
+    background-color: #215c24;
+}
+
+button.btn-secondary {
+    background-color: transparent;
+    color: #7f8c8d;
+    border: 1px solid #cbd5e1;
+    padding: 0.7rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+button.btn-secondary:hover {
+    background-color: #f1f2f6;
+    color: #333;
+}
+
+/* ======================================================= */
+/* --- RESPONSIVE UNTUK SMARTPHONE (OTOMATIS BERUBAH) --- */
+/* ======================================================= */
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column; /* Mengubah susunan jadi atas-bawah */
+        height: auto;
+    }
+
+    .panel-left, .panel-right {
+        flex: none;
+        width: 100%;
+        height: auto;
+        overflow-y: visible;
+    }
+    
+    .preview-container {
+        height: 300px; /* Batasi tinggi kotak pratinjau di HP agar tidak terlalu panjang */
+    }
+    
+    .action-buttons {
+        margin-top: 1.5rem;
+    }
 }
