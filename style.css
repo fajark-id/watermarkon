@@ -160,6 +160,7 @@ input[type="range"] {
 
 /* --- UPLOAD ZONE --- */
 .upload-zone {
+    pointer-events: none;
     background-color: var(--upload-bg);
     border: 2px dashed var(--upload-border);
     border-radius: 0.75rem;
