@@ -3,7 +3,7 @@
 // =========================================================================
 const themeToggle = document.getElementById('themeToggle');
 const uploadZone = document.getElementById('uploadZone');
-const fileInput = document.getElementById('fileInput'); // Mengambil langsung dari DOM
+const fileInput = document.getElementById('fileInput'); 
 const documentPreview = document.getElementById('documentPreview');
 const watermarkStyle = document.getElementById('watermarkStyle');
 const watermarkText = document.getElementById('watermarkText');
@@ -11,7 +11,7 @@ const opacitySlider = document.getElementById('opacitySlider');
 const fontSizeInput = document.getElementById('fontSizeInput');
 const rotationSlider = document.getElementById('rotationSlider');
 const colorCircles = document.querySelectorAll('.color-circle');
-const hiddenColorInput = document.getElementById('hiddenColorInput'); // Mengambil langsung dari DOM
+const hiddenColorInput = document.getElementById('hiddenColorInput'); 
 const btnTemplates = document.querySelectorAll('.btn-template');
 const btnSave = document.getElementById('btnSave');
 const btnReset = document.getElementById('btnReset');
