@@ -14,19 +14,52 @@ const colorCircles = document.querySelectorAll('.color-circle');
 
 const btnTemplates = document.querySelectorAll('.btn-template');
 const btnReset = document.getElementById('btnReset');
-// Mengambil tombol Simpan Dokumen (tombol utama ber-class btn-primary)
 const btnSave = document.querySelector('.btn-primary'); 
+
+// Elemen Baru: Zoom & Tema
+const btnZoomIn = document.getElementById('btnZoomIn');
+const btnZoomOut = document.getElementById('btnZoomOut');
+const btnZoomFit = document.getElementById('btnZoomFit');
+const zoomLabel = document.getElementById('zoomLabel');
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+const themeText = document.getElementById('themeText');
 
 let gambarAsliObj = null; 
 let warnaRGB = '255, 0, 0'; 
-let namaFileAsli = 'dokumen_watermark'; // Menyimpan nama file awal user
+let namaFileAsli = 'dokumen_watermark'; 
+let tingkatZoom = 100; // Default skala zoom (persen)
 
 const hiddenColorInput = document.createElement('input');
 hiddenColorInput.type = 'color';
 hiddenColorInput.value = '#dc2626';
 
 // ==========================================
-// 2. LOGIKA AMBIL FILE (KLIK & DRAG-DROP)
+// 2. DETEKSI TEMA AWAL (SISTEM DEVICE / BROWSER)
+// ==========================================
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    setModeGelap(true);
+}
+
+themeToggle.addEventListener('click', () => {
+    const isDark = document.body.classList.contains('dark-theme');
+    setModeGelap(!isDark);
+});
+
+function setModeGelap(jalankanDark) {
+    if (jalankanDark) {
+        document.body.classList.add('dark-theme');
+        themeIcon.innerText = '☀️';
+        themeText.innerText = 'Light Mode';
+    } else {
+        document.body.classList.remove('dark-theme');
+        themeIcon.innerText = '🌙';
+        themeText.innerText = 'Dark Mode';
+    }
+}
+
+// ==========================================
+// 3. LOGIKA AMBIL FILE (KLIK & DRAG-DROP)
 // ==========================================
 uploadZone.addEventListener('click', () => fileInput.click());
 
@@ -53,13 +86,11 @@ uploadZone.addEventListener('drop', (e) => {
 });
 
 // ==========================================
-// 3. FUNGSI MEMPROSES FILE GAMBAR
+// 4. FUNGSI MEMPROSES FILE GAMBAR
 // ==========================================
 function prosesFileYangDipilih(file) {
     if (!file) return;
     documentPreview.innerHTML = '';
-
-    // Ambil nama file asli dan buang ekstensi lamanya (.png / .jpg)
     namaFileAsli = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
 
     if (file.type.startsWith('image/')) {
@@ -67,6 +98,8 @@ function prosesFileYangDipilih(file) {
         reader.onload = function(event) {
             gambarAsliObj = new Image();
             gambarAsliObj.onload = function() {
+                tingkatZoom = 100; // Reset zoom setiap ganti file baru
+                updateTampilanSkalaZoom();
                 buatPapanPratinjau();
             };
             gambarAsliObj.src = event.target.result;
@@ -80,7 +113,7 @@ function prosesFileYangDipilih(file) {
 }
 
 // ==========================================
-// 4. FUNGSI MEMBUAT PAPAN GAMBAR (CANVAS)
+// 5. FUNGSI MEMBUAT PAPAN GAMBAR (CANVAS)
 // ==========================================
 function buatPapanPratinjau() {
     if (!gambarAsliObj) return;
@@ -92,23 +125,60 @@ function buatPapanPratinjau() {
     canvas.width = gambarAsliObj.width;
     canvas.height = gambarAsliObj.height;
 
-    canvas.style.maxWidth = '100%';
+    // Kontrol CSS dikendalikan oleh tingkatZoom secara dinamis
+    canvas.style.maxWidth = `${tingkatZoom}%`;
     canvas.style.maxHeight = '100%';
     canvas.style.objectFit = 'contain';
+    canvas.style.transition = 'max-width 0.15s ease'; // Efek transisi halus saat di-zoom
 
     documentPreview.appendChild(canvas);
     gambarUlangWatermark();
 }
 
 // ==========================================
-// 5. FUNGSI UTAMA: MENGGAMBAR WATERMARK 
+// 6. LOGIKA KONTROL INTERAKSI ZOOM (TIDAK MERUSAK KUALITAS CETAK)
+// ==========================================
+btnZoomIn.addEventListener('click', () => {
+    if (tingkatZoom < 200) { // Batas maksimal zoom 200%
+        tingkatZoom += 15;
+        aplikasikanPerubahanZoom();
+    }
+});
+
+btnZoomOut.addEventListener('click', () => {
+    if (tingkatZoom > 30) { // Batas minimal zoom 30%
+        tingkatZoom -= 15;
+        aplikasikanPerubahanZoom();
+    }
+});
+
+btnZoomFit.addEventListener('click', () => {
+    tingkatZoom = 100; // Kembalikan ke Auto Fit awal
+    aplikasikanPerubahanZoom();
+});
+
+function aplikasikanPerubahanZoom() {
+    updateTampilanSkalaZoom();
+    const canvas = document.getElementById('papanWatermark');
+    if (canvas) {
+        canvas.style.maxWidth = `${tingkatZoom}%`;
+    }
+}
+
+function updateTampilanSkalaZoom() {
+    if (zoomLabel) {
+        zoomLabel.innerText = `${tingkatZoom}%`;
+    }
+}
+
+// ==========================================
+// 7. FUNGSI UTAMA: MENGGAMBAR WATERMARK 
 // ==========================================
 function gambarUlangWatermark() {
     const canvas = document.getElementById('papanWatermark');
     if (!canvas || !gambarAsliObj) return;
 
     const ctx = canvas.getContext('2d');
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(gambarAsliObj, 0, 0);
 
@@ -164,7 +234,7 @@ function gambarUlangWatermark() {
 }
 
 // ==========================================
-// 6. MENGHUBUNGKAN EVENT KONTROL & WARNA
+// 8. MENGHUBUNGKAN EVENT KONTROL & WARNA
 // ==========================================
 watermarkText.addEventListener('input', gambarUlangWatermark);
 opacitySlider.addEventListener('input', gambarUlangWatermark);
@@ -196,7 +266,7 @@ hiddenColorInput.addEventListener('input', (e) => {
 });
 
 // ==========================================
-// 7. LOGIKA TOMBOL TEMPLATE TEKS
+// 9. LOGIKA TOMBOL TEMPLATE TEKS
 // ==========================================
 btnTemplates.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -216,7 +286,7 @@ btnTemplates.forEach(btn => {
 });
 
 // ==========================================
-// 8. LOGIKA TOMBOL RESET (ULANGI)
+// 10. LOGIKA TOMBOL RESET (ULANGI)
 // ==========================================
 btnReset.addEventListener('click', () => {
     watermarkText.value = 'DOKUMEN COPY';
@@ -233,7 +303,7 @@ btnReset.addEventListener('click', () => {
 });
 
 // ==========================================
-// 9. LOGIKA TOMBOL SIMPAN DOKUMEN (DOWNLOAD)
+// 11. LOGIKA TOMBOL SIMPAN DOKUMEN (DOWNLOAD)
 // ==========================================
 if (btnSave) {
     btnSave.addEventListener('click', () => {
@@ -243,7 +313,6 @@ if (btnSave) {
             return;
         }
 
-        // Generate format waktu: yyyymmdd_hhmm
         const waktuSkrg = new Date();
         const thn = waktuSkrg.getFullYear();
         const bln = String(waktuSkrg.getMonth() + 1).padStart(2, '0');
@@ -252,16 +321,12 @@ if (btnSave) {
         const mnt = String(waktuSkrg.getMinutes()).padStart(2, '0');
         
         const formatWaktu = `${thn}${bln}${tgl}_${jam}${mnt}`;
-        
-        // Gabungkan jadi nama file baru sesuai instruksi PDF
         const namaFileBaru = `${formatWaktu}_${namaFileAsli}.png`;
 
-        // Proses download trigger via link virtual
         const linkDownload = document.createElement('a');
         linkDownload.download = namaFileBaru;
         linkDownload.href = canvas.toDataURL('image/png');
         
-        // Trigger klik otomatis untuk download
         document.body.appendChild(linkDownload);
         linkDownload.click();
         document.body.removeChild(linkDownload);
