@@ -3,13 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watermarkon</title>
+    <title>Watermarkon - Watermark Lokal & Aman</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Halo! Ini adalah masa depan aplikasi WATERMARKON</h1>
-    <p>Pondasi web sudah berhasil terhubung.</p>
-    
+
+    <header class="main-header">
+        <div class="logo-area">
+            <h1>WATERMARKON 🍉</h1>
+            <p>Watermark otomatis langsung dari browser.</p>
+        </div>
+        <div class="header-controls">
+            <button id="themeToggle">☀️/🌙</button>
+            <button id="menuBurger">☰</button>
+        </div>
+    </header>
+
+    <main class="app-container">
+        
+        <section class="panel-left">
+            <h2>📁 Pilih Dokumen</h2>
+            
+            <div class="upload-zone" id="uploadZone">
+                <p>Klik atau Tarik dokumen ke sini</p>
+                <span>Mendukung file PNG, JPG, dan PDF</span>
+                <input type="file" id="fileInput" accept="image/*,.pdf" style="display: none;">
+            </div>
+            
+            <p class="note">Pemrosesan lokal di memori browser, dokumen Anda tidak diupload ke server mana pun.</p>
+
+            <div class="preview-container">
+                <div class="zoom-controls">
+                    <button id="zoomOut">-</button>
+                    <input type="range" id="zoomSlider" min="50" max="150" value="100">
+                    <button id="zoomIn">+</button>
+                </div>
+                <div class="document-preview" id="documentPreview">
+                    <p>Dokumen Auto fit to page</p>
+                    </div>
+            </div>
+        </section>
+
+        <section class="panel-right">
+            <h2>⚙️ Atur Watermark</h2>
+            
+            <div class="control-group">
+                <label for="watermarkStyle">Style & Pola Penempatan</label>
+                <select id="watermarkStyle">
+                    <option value="center">Teks di Tengah (Cabang 1)</option>
+                    <option value="grid">Penuh Tersebar (Cabang 2)</option>
+                    <option value="footer">Footer Style (Cabang 3)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="watermarkText">Teks Watermark</label>
+                <input type="text" id="watermarkText" value="DOKUMEN COPY">
+                <div class="text-templates">
+                    <button type="button" class="btn-template">+ Tanggal</button>
+                    <button type="button" class="btn-template">Untuk Verifikasi</button>
+                    <button type="button" class="btn-template">Dokumen Contoh</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Tampilan Visual</h3>
+                
+                <label for="opacitySlider">Transparansi (Opacity)</label>
+                <input type="range" id="opacitySlider" min="10" max="100" value="50">
+
+                <label for="fontSizeInput">Ukuran Font (px)</label>
+                <input type="number" id="fontSizeInput" value="32">
+
+                <label for="rotationSlider">Rotasi Kemiringan</label>
+                <input type="range" id="rotationSlider" min="-180" max="180" value="-30">
+
+                <label>Warna Teks</label>
+                <div class="color-palette">
+                    <span class="color-circle active" style="background-color: red;"></span>
+                    <span class="color-circle" style="background-color: black;"></span>
+                    <span class="color-circle" style="background-color: blue;"></span>
+                    <span class="color-circle" style="background-color: custom;">🎨</span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button id="btnSave" class="btn-primary">💾 Simpan Dokumen</button>
+                <button id="btnReset" class="btn-secondary">Ulangi Watermark</button>
+            </div>
+        </section>
+
+    </main>
+
     <script src="app.js"></script>
 </body>
 </html>
