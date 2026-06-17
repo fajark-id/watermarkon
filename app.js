@@ -14,9 +14,12 @@ const colorCircles = document.querySelectorAll('.color-circle');
 
 const btnTemplates = document.querySelectorAll('.btn-template');
 const btnReset = document.getElementById('btnReset');
+// Mengambil tombol Simpan Dokumen (tombol utama ber-class btn-primary)
+const btnSave = document.querySelector('.btn-primary'); 
 
 let gambarAsliObj = null; 
 let warnaRGB = '255, 0, 0'; 
+let namaFileAsli = 'dokumen_watermark'; // Menyimpan nama file awal user
 
 const hiddenColorInput = document.createElement('input');
 hiddenColorInput.type = 'color';
@@ -55,6 +58,9 @@ uploadZone.addEventListener('drop', (e) => {
 function prosesFileYangDipilih(file) {
     if (!file) return;
     documentPreview.innerHTML = '';
+
+    // Ambil nama file asli dan buang ekstensi lamanya (.png / .jpg)
+    namaFileAsli = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
 
     if (file.type.startsWith('image/')) {
         const reader = new FileReader();
@@ -103,7 +109,6 @@ function gambarUlangWatermark() {
 
     const ctx = canvas.getContext('2d');
 
-    // Bersihkan layar & gambar dokumen asli
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(gambarAsliObj, 0, 0);
 
@@ -120,7 +125,6 @@ function gambarUlangWatermark() {
     const pola = watermarkStyle.value; 
 
     if (pola === 'center') {
-        // --- CABANG 1: TEKS DI TENGAH ---
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(kemiringan);
@@ -128,7 +132,6 @@ function gambarUlangWatermark() {
         ctx.restore();
 
     } else if (pola === 'scattered') {
-        // --- CABANG 2: PENUH TERSEBAR ---
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(kemiringan);
@@ -136,7 +139,6 @@ function gambarUlangWatermark() {
         const metrikTeks = ctx.measureText(teks);
         const lebarTeks = metrikTeks.width;
         
-        // PERBAIKAN: Jarak kini dihitung menggunakan perkalian ukuran font agar selalu proporsional
         const jarakX = lebarTeks + (ukuranFont * 2); 
         const jarakY = ukuranFont * 4; 
 
@@ -153,11 +155,9 @@ function gambarUlangWatermark() {
         ctx.restore();
 
     } else if (pola === 'footer') {
-        // --- CABANG 3: DI BAWAH (FOOTER) ---
         ctx.save();
-        // Geser ke tengah bawah (Margin bawah diset sebesar 3x ukuran font agar aman)
         ctx.translate(canvas.width / 2, canvas.height - (ukuranFont * 3));
-        ctx.rotate(kemiringan); // Tetap menerima rotasi agar user bebas berkreasi
+        ctx.rotate(kemiringan);
         ctx.fillText(teks, 0, 0);
         ctx.restore();
     }
@@ -231,3 +231,39 @@ btnReset.addEventListener('click', () => {
 
     gambarUlangWatermark();
 });
+
+// ==========================================
+// 9. LOGIKA TOMBOL SIMPAN DOKUMEN (DOWNLOAD)
+// ==========================================
+if (btnSave) {
+    btnSave.addEventListener('click', () => {
+        const canvas = document.getElementById('papanWatermark');
+        if (!canvas || !gambarAsliObj) {
+            alert('Silakan pilih dokumen terlebih dahulu sebelum menyimpan!');
+            return;
+        }
+
+        // Generate format waktu: yyyymmdd_hhmm
+        const waktuSkrg = new Date();
+        const thn = waktuSkrg.getFullYear();
+        const bln = String(waktuSkrg.getMonth() + 1).padStart(2, '0');
+        const tgl = String(waktuSkrg.getDate()).padStart(2, '0');
+        const jam = String(waktuSkrg.getHours()).padStart(2, '0');
+        const mnt = String(waktuSkrg.getMinutes()).padStart(2, '0');
+        
+        const formatWaktu = `${thn}${bln}${tgl}_${jam}${mnt}`;
+        
+        // Gabungkan jadi nama file baru sesuai instruksi PDF
+        const namaFileBaru = `${formatWaktu}_${namaFileAsli}.png`;
+
+        // Proses download trigger via link virtual
+        const linkDownload = document.createElement('a');
+        linkDownload.download = namaFileBaru;
+        linkDownload.href = canvas.toDataURL('image/png');
+        
+        // Trigger klik otomatis untuk download
+        document.body.appendChild(linkDownload);
+        linkDownload.click();
+        document.body.removeChild(linkDownload);
+    });
+}
