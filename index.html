@@ -73,16 +73,18 @@
                 <div class="control-section">
                     <h3 class="section-title">🎨 TAMPILAN VISUAL</h3>
                     
-                    <div class="control-group">
-                        <div class="label-row">
-                            <label for="opacitySlider">Transparansi (Opacity)</label>
-                            <span class="value-badge" id="opacityVal">50%</span>
+                    <div class="visual-compact-row">
+                        <div class="control-group">
+                            <div class="label-row">
+                                <label for="opacitySlider">Transparansi</label>
+                                <span class="value-badge" id="opacityVal">50%</span>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" id="opacitySlider" min="10" max="100" value="50" class="slider">
+                            </div>
                         </div>
-                        <input type="range" id="opacitySlider" min="10" max="100" value="50" class="slider">
-                    </div>
-                    
-                    <div class="compact-row">
-                        <div class="control-group flex-1">
+                        
+                        <div class="control-group">
                             <label class="sub-label">Ukuran Font (px)</label>
                             <div class="stepper-input">
                                 <button type="button" class="step-btn" id="fontDecrease">-</button>
@@ -91,7 +93,7 @@
                             </div>
                         </div>
                         
-                        <div class="control-group flex-1">
+                        <div class="control-group">
                             <label class="sub-label">Warna Teks</label>
                             <div class="color-picker-group">
                                 <button type="button" class="color-dot red active" data-color="255, 0, 0"></button>
