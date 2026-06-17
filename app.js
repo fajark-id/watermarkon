@@ -16,18 +16,22 @@ const btnTemplates = document.querySelectorAll('.btn-template');
 const btnSave = document.getElementById('btnSave');
 const btnReset = document.getElementById('btnReset');
 
-// Komponen Kontrol Skala Tampilan (Zoom)
+// Selektor Zoom Minimalis Baru
 const zoomSlider = document.getElementById('zoomSlider');
-const btnZoomIn = document.getElementById('btnZoomIn');
-const btnZoomOut = document.getElementById('btnZoomOut');
-const btnZoomFit = document.getElementById('btnZoomFit');
 const zoomLabel = document.getElementById('zoomLabel');
 
 // Variabel Penyimpanan Data Internal Aplikasi
 let gambarAsliObj = null;
 let warnaRGB = '255, 0, 0';
 let namaFileAsli = 'dokumen_watermark';
-let tingkatZoom = 100; // Skala dasar persen (30% - 200%)
+
+// State Kontrol Zoom & Panning (Geser Layar)
+let tingkatZoom = 100; // Dalam persen (100% - 300%)
+let currentX = 0;
+let currentY = 0;
+let startX = 0;
+let startY = 0;
+let isDragging = false;
 
 // =========================================================================
 // 2. SISTEM MANAGEMENT TEMA (DARK / LIGHT MODE)
@@ -51,7 +55,6 @@ function setModeVisual(pilihGelap) {
 // =========================================================================
 // 3. LOGIKA INTERAKSI UNGGAH DOKUMEN (DRAG-DROP & KLIK)
 // =========================================================================
-// Ketika area kotak putus-putus diklik, paksa input file bawaan untuk terbuka
 uploadZone.addEventListener('click', () => {
     fileInput.click();
 });
@@ -95,15 +98,19 @@ function eksekusiProsesFile(file) {
         reader.onload = function(event) {
             gambarAsliObj = new Image();
             gambarAsliObj.onload = function() {
-                tingkatZoom = 100; // Reset ke 100% tiap ganti berkas baru
-                sinkronisasiUIZoom();
+                // Reset Zoom & Posisi Koordinat Seret Setiap Ganti Dokumen Baru
+                tingkatZoom = 100;
+                currentX = 0;
+                currentY = 0;
+                zoomSlider.value = 100;
+                terapkanTransformasiCanvas();
                 inisialisasiPapanCanvas();
             };
             gambarAsliObj.src = event.target.result;
         };
         reader.readAsDataURL(file);
     } else if (file.type === 'application/pdf') {
-        documentPreview.innerHTML = `<p style="color: var(--text-main); font-size: 0.9rem;">📄 File PDF dimuat: <strong>${file.name}</strong>.<br><span style="color: var(--text-muted); font-size: 0.8rem;">(Fitur render PDF otomatis akan aktif pada tahap pengembangan selanjutnya).</span></p>`;
+        documentPreview.innerHTML = `<p style="color: var(--text-main); font-size: 0.9rem; text-align:center;">📄 File PDF dimuat: <strong>${file.name}</strong>.<br><span style="color: var(--text-muted); font-size: 0.8rem;">(Fitur render PDF otomatis akan aktif pada tahap pengembangan selanjutnya).</span></p>`;
     } else {
         documentPreview.innerHTML = '<p style="color: #ef4444; font-weight: bold;">❌ Format berkas tidak didukung!</p>';
     }
@@ -118,56 +125,58 @@ function inisialisasiPapanCanvas() {
     canvas.width = gambarAsliObj.width;
     canvas.height = gambarAsliObj.height;
 
-    canvas.style.width = `${tingkatZoom}%`;
-    canvas.style.maxWidth = 'none'; 
-    canvas.style.height = 'auto';
-
     documentPreview.appendChild(canvas);
     gambarUlangSistemWatermark();
+    terapkanTransformasiCanvas();
 }
 
 // =========================================================================
-// 5. SISTEM SINKRONISASI KONTROL ZOOM
+// 5. SISTEM DRAG-TO-PAN (CLICK & DRAG KURSOR HAND) & ZOOM
 // =========================================================================
 zoomSlider.addEventListener('input', (e) => {
     tingkatZoom = parseInt(e.target.value);
-    terapkanSkalaTransformasiVisual();
+    terapkanTransformasiCanvas();
 });
 
-btnZoomOut.addEventListener('click', () => {
-    if (tingkatZoom > 30) {
-        tingkatZoom = Math.max(30, tingkatZoom - 10);
-        sinkronisasiUIZoom();
-        terapkanSkalaTransformasiVisual();
-    }
-});
-
-btnZoomIn.addEventListener('click', () => {
-    if (tingkatZoom < 200) {
-        tingkatZoom = Math.min(200, tingkatZoom + 10);
-        sinkronisasiUIZoom();
-        terapkanSkalaTransformasiVisual();
-    }
-});
-
-btnZoomFit.addEventListener('click', () => {
-    tingkatZoom = 100;
-    sinkronisasiUIZoom();
-    terapkanSkalaTransformasiVisual();
-});
-
-function sinkronisasiUIZoom() {
-    zoomSlider.value = tingkatZoom;
-    zoomLabel.innerText = `${tingkatZoom}%`;
-}
-
-function terapkanSkalaTransformasiVisual() {
-    zoomLabel.innerText = `${tingkatZoom}%`;
+function terapkanTransformasiCanvas() {
     const canvas = document.getElementById('papanWatermark');
-    if (canvas) {
-        canvas.style.width = `${tingkatZoom}%`;
+    if (!canvas) return;
+
+    zoomLabel.innerText = `${tingkatZoom}%`;
+
+    if (tingkatZoom > 100) {
+        documentPreview.classList.add('can-pan');
+    } else {
+        documentPreview.classList.remove('can-pan');
+        // Kunci balik posisi ke tengah jika kembali ke 100%
+        currentX = 0;
+        currentY = 0;
     }
+    canvas.style.transform = `translate(${currentX}px, ${currentY}px) scale(${tingkatZoom / 100})`;
 }
+
+// Event dragging penyeretan dokumen menggunakan kursor mouse
+documentPreview.addEventListener('mousedown', (e) => {
+    if (tingkatZoom <= 100) return;
+    isDragging = true;
+    documentPreview.classList.add('is-panning');
+    startX = e.clientX - currentX;
+    startY = e.clientY - currentY;
+});
+
+window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    currentX = e.clientX - startX;
+    currentY = e.clientY - startY;
+    terapkanTransformasiCanvas();
+});
+
+window.addEventListener('mouseup', () => {
+    if (isDragging) {
+        isDragging = false;
+        documentPreview.classList.remove('is-panning');
+    }
+});
 
 // =========================================================================
 // 6. ENGINE WATERMARK CANVAS
@@ -301,7 +310,13 @@ btnReset.addEventListener('click', () => {
     colorCircles[0].classList.add('active');
     document.getElementById('customColorBtn').style.backgroundColor = 'var(--bg-main)';
 
+    tingkatZoom = 100;
+    currentX = 0;
+    currentY = 0;
+    zoomSlider.value = 100;
+    
     gambarUlangSistemWatermark();
+    terapkanTransformasiCanvas();
 });
 
 // =========================================================================
