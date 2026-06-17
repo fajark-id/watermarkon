@@ -32,17 +32,15 @@
                 <input type="file" id="fileInput" accept="image/*,application/pdf" style="display: none;">
             </div>
 
-            <div class="zoom-container">
-                <div class="zoom-controls-row">
-                    <button id="btnZoomOut" class="btn-zoom">-</button>
-                    <input type="range" id="zoomSlider" min="30" max="200" value="100" class="zoom-slider">
-                    <button id="btnZoomIn" class="btn-zoom">+</button>
+            <div class="preview-wrapper">
+                <div id="zoomOverlay" class="zoom-overlay">
+                    <span id="zoomLabel">100%</span>
+                    <input type="range" id="zoomSlider" min="100" max="300" value="100" class="mini-slider">
                 </div>
-                <button id="btnZoomFit" class="btn-text-link">Dokumen Auto fit to page (<span id="zoomLabel">100%</span>)</button>
+                
+                <div id="documentPreview" class="document-preview">
+                    </div>
             </div>
-
-            <div id="documentPreview" class="document-preview">
-                </div>
         </section>
 
         <section class="panel-right">
