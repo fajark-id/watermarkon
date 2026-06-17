@@ -3,6 +3,7 @@
 // =========================================================================
 const themeToggle = document.getElementById('themeToggle');
 const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput'); // Mengambil langsung dari DOM
 const documentPreview = document.getElementById('documentPreview');
 const watermarkStyle = document.getElementById('watermarkStyle');
 const watermarkText = document.getElementById('watermarkText');
@@ -10,6 +11,7 @@ const opacitySlider = document.getElementById('opacitySlider');
 const fontSizeInput = document.getElementById('fontSizeInput');
 const rotationSlider = document.getElementById('rotationSlider');
 const colorCircles = document.querySelectorAll('.color-circle');
+const hiddenColorInput = document.getElementById('hiddenColorInput'); // Mengambil langsung dari DOM
 const btnTemplates = document.querySelectorAll('.btn-template');
 const btnSave = document.getElementById('btnSave');
 const btnReset = document.getElementById('btnReset');
@@ -21,16 +23,6 @@ const btnZoomOut = document.getElementById('btnZoomOut');
 const btnZoomFit = document.getElementById('btnZoomFit');
 const zoomLabel = document.getElementById('zoomLabel');
 
-// Input File Tersembunyi bawaan browser
-const hiddenFileInput = document.createElement('input');
-hiddenFileInput.type = 'file';
-hiddenFileInput.accept = 'image/*,application/pdf';
-
-// Input Warna Kustom Tersembunyi
-const hiddenColorInput = document.createElement('input');
-hiddenColorInput.type = 'color';
-hiddenColorInput.value = '#ff0000';
-
 // Variabel Penyimpanan Data Internal Aplikasi
 let gambarAsliObj = null;
 let warnaRGB = '255, 0, 0';
@@ -40,12 +32,10 @@ let tingkatZoom = 100; // Skala dasar persen (30% - 200%)
 // =========================================================================
 // 2. SISTEM MANAGEMENT TEMA (DARK / LIGHT MODE)
 // =========================================================================
-// Cek preferensi perangkat pengguna saat pertama kali masuk halaman
 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     document.body.classList.add('dark-mode');
 }
 
-// Event handler klik tombol tema
 themeToggle.addEventListener('click', () => {
     document.body.classList.contains('dark-mode') ? setModeVisual(false) : setModeVisual(true);
 });
@@ -61,10 +51,15 @@ function setModeVisual(pilihGelap) {
 // =========================================================================
 // 3. LOGIKA INTERAKSI UNGGAH DOKUMEN (DRAG-DROP & KLIK)
 // =========================================================================
-uploadZone.addEventListener('click', () => hiddenFileInput.click());
+// Ketika area kotak putus-putus diklik, paksa input file bawaan untuk terbuka
+uploadZone.addEventListener('click', () => {
+    fileInput.click();
+});
 
-hiddenFileInput.addEventListener('change', (e) => {
-    eksekusiProsesFile(e.target.files[0]);
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        eksekusiProsesFile(e.target.files[0]);
+    }
 });
 
 uploadZone.addEventListener('dragover', (e) => {
@@ -100,7 +95,7 @@ function eksekusiProsesFile(file) {
         reader.onload = function(event) {
             gambarAsliObj = new Image();
             gambarAsliObj.onload = function() {
-                tingkatZoom = 100; // Kembalikan ke 100% tiap ganti berkas baru
+                tingkatZoom = 100; // Reset ke 100% tiap ganti berkas baru
                 sinkronisasiUIZoom();
                 inisialisasiPapanCanvas();
             };
@@ -123,9 +118,8 @@ function inisialisasiPapanCanvas() {
     canvas.width = gambarAsliObj.width;
     canvas.height = gambarAsliObj.height;
 
-    // Terapkan skala CSS tampilan awal berdasarkan tingkatZoom
     canvas.style.width = `${tingkatZoom}%`;
-    canvas.style.maxWidth = 'none'; // Izinkan melampaui container jika di-zoom in besar
+    canvas.style.maxWidth = 'none'; 
     canvas.style.height = 'auto';
 
     documentPreview.appendChild(canvas);
@@ -133,15 +127,13 @@ function inisialisasiPapanCanvas() {
 }
 
 // =========================================================================
-// 5. SISTEM UNIFIED ZOOM (MENGATUR SKALA TAMPILAN PRATINJAU)
+// 5. SISTEM SINKRONISASI KONTROL ZOOM
 // =========================================================================
-// Menangani pergeseran manual pada range slider
 zoomSlider.addEventListener('input', (e) => {
     tingkatZoom = parseInt(e.target.value);
     terapkanSkalaTransformasiVisual();
 });
 
-// Menangani tombol minus (-)
 btnZoomOut.addEventListener('click', () => {
     if (tingkatZoom > 30) {
         tingkatZoom = Math.max(30, tingkatZoom - 10);
@@ -150,7 +142,6 @@ btnZoomOut.addEventListener('click', () => {
     }
 });
 
-// Menangani tombol plus (+)
 btnZoomIn.addEventListener('click', () => {
     if (tingkatZoom < 200) {
         tingkatZoom = Math.min(200, tingkatZoom + 10);
@@ -159,7 +150,6 @@ btnZoomIn.addEventListener('click', () => {
     }
 });
 
-// Menangani klik pintasan Auto Fit
 btnZoomFit.addEventListener('click', () => {
     tingkatZoom = 100;
     sinkronisasiUIZoom();
@@ -180,7 +170,7 @@ function terapkanSkalaTransformasiVisual() {
 }
 
 // =========================================================================
-// 6. ENGINE CORE: MENGGAMBAR WATERMARK ATAS CANVAS ASLI
+// 6. ENGINE WATERMARK CANVAS
 // =========================================================================
 function gambarUlangSistemWatermark() {
     const canvas = document.getElementById('papanWatermark');
@@ -189,7 +179,6 @@ function gambarUlangSistemWatermark() {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Gambar ulang berkas mentah asli di baris terbawah canvas
     ctx.drawImage(gambarAsliObj, 0, 0);
 
     const teks = watermarkText.value;
@@ -197,7 +186,6 @@ function gambarUlangSistemWatermark() {
     const transparansi = opacitySlider.value / 100;
     const kemiringanRad = (rotationSlider.value * Math.PI) / 180;
 
-    // Atur properti brush canvas konteks 2D
     ctx.font = `bold ${ukuranFont}px Arial, sans-serif`;
     ctx.fillStyle = `rgba(${warnaRGB}, ${transparansi})`;
     ctx.textAlign = 'center';
@@ -241,7 +229,7 @@ function gambarUlangSistemWatermark() {
 }
 
 // =========================================================================
-// 7. HUBUNGKAN INTERAKSI KONTROL & PILIHAN WARNA
+// 7. EVENT LISTENER KONTROL & WARNA
 // =========================================================================
 watermarkText.addEventListener('input', gambarUlangSistemWatermark);
 watermarkStyle.addEventListener('change', gambarUlangSistemWatermark);
@@ -279,7 +267,7 @@ hiddenColorInput.addEventListener('input', (e) => {
 });
 
 // =========================================================================
-// 8. LOGIKA PILIHAN TEMPLATE QUICK-TEXT
+// 8. QUICK TEMPLATE TEKS
 // =========================================================================
 btnTemplates.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -299,7 +287,7 @@ btnTemplates.forEach(btn => {
 });
 
 // =========================================================================
-// 9. LOGIKA PEMULIHAN PENGATURAN (RESET AWAL)
+// 9. TOMBOL RESET AWAL
 // =========================================================================
 btnReset.addEventListener('click', () => {
     watermarkText.value = 'DOKUMEN COPY';
@@ -317,7 +305,7 @@ btnReset.addEventListener('click', () => {
 });
 
 // =========================================================================
-// 10. PROSES EKSPOR DAN SIMPAN GAMBAR RESOLUSI TINGGI
+// 10. EXPORT & SIMPAN BERKAS (AUTONAME TIMESTAMP)
 // =========================================================================
 btnSave.addEventListener('click', () => {
     const canvas = document.getElementById('papanWatermark');
