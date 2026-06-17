@@ -294,7 +294,7 @@ btnTemplates.forEach(btn => {
 // =========================================================================
 btnReset.addEventListener('click', () => {
     watermarkText.value = 'DOKUMEN COPY';
-    watermarkStyle.value = 'center'; /* Reset kembali ke Cabang 1 */
+    watermarkStyle.value = 'center'; 
     opacitySlider.value = 50;
     opacityVal.innerText = '50%';
     fontSizeInput.value = 32;
