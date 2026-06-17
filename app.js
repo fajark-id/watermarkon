@@ -117,8 +117,6 @@ function gambarUlangWatermark() {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Periksa pilihan pola dari dropdown HTML
-    // Pastikan di index.html value-nya adalah "center", "scattered", "footer"
     const pola = watermarkStyle.value; 
 
     if (pola === 'center') {
@@ -132,25 +130,20 @@ function gambarUlangWatermark() {
     } else if (pola === 'scattered') {
         // --- CABANG 2: PENUH TERSEBAR ---
         ctx.save();
-        // Pindah titik pusat rotasi ke tengah dokumen
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(kemiringan);
 
-        // Hitung lebar teks untuk menentukan jarak (gap) antar watermark
         const metrikTeks = ctx.measureText(teks);
         const lebarTeks = metrikTeks.width;
         
-        // Jarak aman agar teks tidak saling tumpuk
-        const jarakX = lebarTeks + 100; 
-        const jarakY = ukuranFont + 120; 
+        // PERBAIKAN: Jarak kini dihitung menggunakan perkalian ukuran font agar selalu proporsional
+        const jarakX = lebarTeks + (ukuranFont * 2); 
+        const jarakY = ukuranFont * 4; 
 
-        // Area perluasan (2x lipat ukuran canvas) agar sudut aman dari area kosong saat diputar
         const batasArea = Math.max(canvas.width, canvas.height) * 2;
 
-        // Cetak teks berulang-ulang seperti jaring/grid
         for (let x = -batasArea; x <= batasArea; x += jarakX) {
             for (let y = -batasArea; y <= batasArea; y += jarakY) {
-                // Efek susun bata: geser baris ganjil sedikit ke kanan
                 let barisGanjil = Math.abs(Math.round(y / jarakY)) % 2 === 1;
                 let geserX = barisGanjil ? (jarakX / 2) : 0;
                 
@@ -159,12 +152,13 @@ function gambarUlangWatermark() {
         }
         ctx.restore();
 
-    } else {
-        // --- CABANG 3: FOOTER (Akan diaktifkan selanjutnya) ---
+    } else if (pola === 'footer') {
+        // --- CABANG 3: DI BAWAH (FOOTER) ---
         ctx.save();
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate(kemiringan);
-        ctx.fillText(teks + " (Pola Belum Aktif)", 0, 0);
+        // Geser ke tengah bawah (Margin bawah diset sebesar 3x ukuran font agar aman)
+        ctx.translate(canvas.width / 2, canvas.height - (ukuranFont * 3));
+        ctx.rotate(kemiringan); // Tetap menerima rotasi agar user bebas berkreasi
+        ctx.fillText(teks, 0, 0);
         ctx.restore();
     }
 }
