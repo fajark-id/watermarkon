@@ -176,7 +176,7 @@ input[type="text"], select {
     cursor: pointer;
 }
 
-/* --- ZONA UPLOAD FILE (Fix Warna Teks di Dark Mode) --- */
+/* --- ZONA UPLOAD FILE --- */
 .upload-zone {
     background-color: var(--upload-bg);
     border: 2px dashed var(--upload-border);
@@ -189,7 +189,7 @@ input[type="text"], select {
 }
 
 .upload-zone * { pointer-events: none; }
-.upload-title { font-weight: 600; font-size: 0.9rem; color: var(--text-main); } /* Fix Dark Theme */
+.upload-title { font-weight: 600; font-size: 0.9rem; color: var(--text-main); }
 .upload-subtitle { font-size: 0.75rem; color: var(--text-muted); margin: 0.1rem 0 0.3rem 0; }
 .upload-warning {
     font-size: 0.7rem;
@@ -264,23 +264,40 @@ body.dark-mode .zoom-overlay { background: rgba(30, 41, 59, 0.85); color: #f8faf
 .mini-slider { -webkit-appearance: none; appearance: none; width: 70px; height: 4px; background: #cbd5e1; border-radius: 2px; outline: none; }
 .mini-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 10px; height: 10px; border-radius: 50%; background: var(--primary-color); cursor: pointer; }
 
-/* --- SEKSI PANEL VISUAL COMPACT --- */
+/* --- SEKSI PANEL VISUAL (3 KOLOM HORIZONTAL SEJAJAR) --- */
 .control-section { margin-bottom: 0.1rem; }
 .section-title { font-size: 0.8rem; font-weight: 800; color: var(--accent-blue); margin-bottom: 10px; letter-spacing: 0.5px; }
 .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
 .value-badge { background-color: var(--badge-bg); color: var(--badge-text); font-size: 0.75rem; font-weight: 700; padding: 1px 6px; border-radius: 4px; }
 .value-badge.badge-green { background-color: rgba(22, 163, 74, 0.1); color: var(--primary-color); }
 
-/* Baris Kompak 1 baris sejajar tinggi pas */
-.compact-row {
+/* Baris Kompak Grid 3 Kolom */
+.visual-compact-row {
     display: flex;
-    gap: 12px;
-    margin-top: 8px;
-    align-items: flex-end; /* Menyeimbangkan posisi dasar konten */
+    gap: 14px;
+    margin-top: 4px;
+    align-items: flex-end; /* Semua kontrol sejajar di bawah rata/baseline */
+    width: 100%;
 }
 
-.flex-1 { flex: 1; }
-.sub-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; }
+.visual-compact-row .control-group {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Proporsi pembagian lebar kolom agar pas dan rapi */
+.visual-compact-row .control-group:nth-child(1) { flex: 1.2; } /* Kolom Transparansi */
+.visual-compact-row .control-group:nth-child(2) { flex: 0.9; } /* Kolom Ukuran Font */
+.visual-compact-row .control-group:nth-child(3) { flex: 1.1; } /* Kolom Warna Teks */
+
+.sub-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px; display: block; font-weight: 600; }
+
+/* Wadah penyetara tinggi slider agar setinggi 32px */
+.slider-container {
+    display: flex;
+    align-items: center;
+    height: 32px;
+}
 
 /* Stepper Input */
 .stepper-input {
@@ -290,14 +307,14 @@ body.dark-mode .zoom-overlay { background: rgba(30, 41, 59, 0.85); color: #f8faf
     border-radius: 6px;
     overflow: hidden;
     background: var(--bg-main);
-    height: 32px; /* Ketinggian seragam */
+    height: 32px;
     width: 100%;
 }
 
 .stepper-input .step-btn {
     background: transparent;
     border: none;
-    width: 32px;
+    width: 30px;
     height: 100%;
     font-size: 1rem;
     cursor: pointer;
@@ -322,9 +339,9 @@ body.dark-mode .zoom-overlay { background: rgba(30, 41, 59, 0.85); color: #f8faf
 /* Color Picker Group */
 .color-picker-group {
     display: flex;
-    gap: 6px;
+    gap: 5px;
     align-items: center;
-    height: 32px; /* Ketinggian seragam dengan stepper */
+    height: 32px;
 }
 
 .color-dot {
@@ -365,4 +382,5 @@ body.dark-mode .zoom-overlay { background: rgba(30, 41, 59, 0.85); color: #f8faf
     .app-container { flex-direction: column; height: auto; padding: 0 0 0.75rem 0; gap: 0.75rem; }
     .panel-left, .panel-right { height: auto; }
     .document-preview { height: 350px; }
+    .visual-compact-row { flex-direction: column; align-items: stretch; gap: 10px; }
 }
