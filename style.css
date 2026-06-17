@@ -7,8 +7,8 @@
 
 body {
     font-family: system-ui, -apple-system, sans-serif;
-    background-color: #f5f7fb;
-    color: #2c3e50;
+    background-color: #f8fafc;
+    color: #1e293b;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -22,68 +22,73 @@ body {
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .logo-area h1 {
-    font-size: 1.5rem;
-    color: #2e7d32; /* Warna Hijau Semangka */
+    font-size: 1.4rem;
+    color: #16a34a; /* Hijau segar */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .logo-area p {
-    font-size: 0.85rem;
-    color: #7f8c8d;
+    font-size: 0.8rem;
+    color: #64748b;
 }
 
 .header-controls button {
-    background: #f1f2f6;
+    background: #f1f5f9;
     border: none;
     padding: 0.5rem 0.75rem;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 1rem;
-    margin-left: 0.5rem;
+    font-size: 0.9rem;
 }
 
 /* --- KONTEN UTAMA (DUA PANEL PC) --- */
 .app-container {
     display: flex;
     flex: 1;
-    height: calc(100vh - 70px); /* Sisa layar setelah dipotong header */
+    height: calc(100vh - 65px);
+    overflow: hidden;
 }
 
 /* PANEL KIRI (Preview Dokumen) */
 .panel-left {
-    flex: 1.2; /* Lebih lebar sedikit dari panel kanan */
+    flex: 1.3;
     padding: 1.5rem;
-    border-right: 1px solid #e2e8f0;
     display: flex;
     flex-direction: column;
     gap: 1rem;
     background-color: #ffffff;
+    height: 100%;
 }
 
 /* PANEL KANAN (Kontrol) */
 .panel-right {
-    flex: 0.8;
+    flex: 0.7;
     padding: 1.5rem;
-    background-color: #f8fafc;
+    background-color: #f1f5f9;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    overflow-y: auto; /* Jika kontrol panjang, bisa di-scroll ke bawah */
+    gap: 1.25rem;
+    border-left: 1px solid #e2e8f0;
+    overflow-y: auto; /* Gulir ke bawah jika menu panjang */
+    height: 100%;
 }
 
 h2 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
 }
 
 /* --- AREA UPLOAD DOKUMEN --- */
 .upload-zone {
-    border: 2px dashed #b4c6d8;
+    border: 2px dashed #cbd5e1;
     background-color: #f8fafc;
-    padding: 2rem;
+    padding: 1.5rem;
     text-align: center;
     border-radius: 8px;
     cursor: pointer;
@@ -91,27 +96,29 @@ h2 {
 }
 
 .upload-zone:hover {
-    border-color: #2e7d32;
+    border-color: #16a34a;
     background-color: #f0fdf4;
 }
 
 .upload-zone p {
-    font-weight: bold;
+    font-size: 0.9rem;
+    font-weight: 600;
     margin-bottom: 0.25rem;
 }
 
 .upload-zone span {
-    font-size: 0.8rem;
-    color: #94a3b8;
+    font-size: 0.75rem;
+    color: #64748b;
 }
 
 .note {
-    font-size: 0.8rem;
-    color: #e74c3c; /* Warna merah peringatan aman */
-    background-color: #fdedec;
+    font-size: 0.75rem;
+    color: #dc2626;
+    background-color: #fee2e2;
     padding: 0.5rem;
-    border-radius: 4px;
+    border-radius: 6px;
     text-align: center;
+    font-weight: 500;
 }
 
 /* --- PREVIEW BOX --- */
@@ -121,7 +128,7 @@ h2 {
     flex-direction: column;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
-    background: #ecf0f1;
+    background: #e2e8f0;
     overflow: hidden;
 }
 
@@ -131,17 +138,22 @@ h2 {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
     border-bottom: 1px solid #e2e8f0;
 }
 
 .zoom-controls button {
-    width: 28px;
-    height: 28px;
-    border: 1px solid #ccc;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #cbd5e1;
     background: white;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
+    font-weight: bold;
+}
+
+.zoom-controls input[type="range"] {
+    flex: 0.5;
 }
 
 .document-preview {
@@ -149,57 +161,74 @@ h2 {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #95a5a6;
+    color: #64748b;
     font-style: italic;
     padding: 1rem;
+    overflow: hidden;
 }
 
 /* --- FORM KONTROL WATERMARK (PANEL KANAN) --- */
 .control-group {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.4rem;
+    background: #ffffff;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
 }
 
 .control-group label {
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    color: #334155;
 }
 
 .control-group h3 {
-    font-size: 1rem;
+    font-size: 0.95rem;
+    color: #0f172a;
     margin-bottom: 0.25rem;
-    border-bottom: 1px solid #e2e8f0;
-    padding-bottom: 0.25rem;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 0.5rem;
 }
 
-select, input[type="text"], input[type="number"] {
+select, input[type="text"], input[type="number"], input[type="range"] {
     width: 100%;
-    padding: 0.6rem;
+    padding: 0.5rem;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+input[type="range"] {
+    padding: 0.2rem 0;
+    cursor: pointer;
 }
 
 /* Template Teks Tombol Kecil */
 .text-templates {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.4rem;
     flex-wrap: wrap;
-    margin-top: 0.25rem;
+    margin-top: 0.4rem;
 }
 
 .btn-template {
-    background: #e2e8f0;
-    border: none;
-    padding: 0.3rem 0.6rem;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    padding: 0.35rem 0.6rem;
     font-size: 0.75rem;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
+    color: #475569;
+    font-weight: 500;
+    transition: all 0.2s;
 }
 
 .btn-template:hover {
-    background: #cbd5e1;
+    background: #e2e8f0;
+    color: #0f172a;
 }
 
 /* Palet Bulat Warna */
@@ -211,82 +240,86 @@ select, input[type="text"], input[type="number"] {
 }
 
 .color-circle {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     cursor: pointer;
-    border: 2px solid transparent;
+    border: 2px solid #cbd5e1;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
+    transition: all 0.2s;
 }
 
 .color-circle.active {
-    border-color: #2c3e50;
-    transform: scale(1.1);
+    border-color: #0f172a;
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #16a34a;
+    transform: scale(1.05);
 }
 
 /* --- TOMBOL AKSI UTAMA --- */
 .action-buttons {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    margin-top: auto; /* Mendorong tombol ke posisi paling bawah panel */
+    gap: 0.5rem;
+    margin-top: auto; /* Dorong ke paling bawah */
+    padding-top: 1rem;
 }
 
 button.btn-primary {
-    background-color: #2e7d32;
+    background-color: #16a34a;
     color: white;
     border: none;
-    padding: 0.9rem;
+    padding: 0.85rem;
     border-radius: 6px;
-    font-size: 1rem;
-    font-weight: bold;
+    font-size: 0.95rem;
+    font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(46, 125, 50, 0.2);
+    transition: background 0.2s;
 }
 
 button.btn-primary:hover {
-    background-color: #215c24;
+    background-color: #15803d;
 }
 
 button.btn-secondary {
-    background-color: transparent;
-    color: #7f8c8d;
+    background-color: #ffffff;
+    color: #64748b;
     border: 1px solid #cbd5e1;
     padding: 0.7rem;
     border-radius: 6px;
     font-size: 0.9rem;
     cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
 }
 
 button.btn-secondary:hover {
-    background-color: #f1f2f6;
-    color: #333;
+    background-color: #f8fafc;
+    color: #0f172a;
+    border-color: #94a3b8;
 }
 
-/* ======================================================= */
-/* --- RESPONSIVE UNTUK SMARTPHONE (OTOMATIS BERUBAH) --- */
-/* ======================================================= */
+/* ========================================== */
+/* --- RESPONSIVE SMARTPHONE (OTOMATIS) ---   */
+/* ========================================== */
 @media (max-width: 768px) {
     .app-container {
-        flex-direction: column; /* Mengubah susunan jadi atas-bawah */
+        flex-direction: column;
         height: auto;
+        overflow: visible;
     }
 
     .panel-left, .panel-right {
         flex: none;
         width: 100%;
         height: auto;
-        overflow-y: visible;
+        border-left: none;
+        border-right: none;
     }
     
     .preview-container {
-        height: 300px; /* Batasi tinggi kotak pratinjau di HP agar tidak terlalu panjang */
-    }
-    
-    .action-buttons {
-        margin-top: 1.5rem;
+        height: 350px;
     }
 }
