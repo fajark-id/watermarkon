@@ -5,101 +5,128 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watermarkon - Watermark Lokal & Aman</title>
     <link rel="stylesheet" href="style.css">
-    <script src="app.js" defer></script>
 </head>
 <body>
-
     <header class="main-header">
         <div class="logo-area">
             <h1>WATERMARKON 🍉</h1>
             <p>Watermark otomatis langsung dari browser.</p>
         </div>
         <div class="header-controls">
-            <button id="themeToggle" class="btn-icon">☀️/🌙</button>
-            <button id="menuBurger" class="btn-icon">☰</button>
+            <button id="themeToggle">☀️/🌙 Mode</button>
+            <button id="menuBurger">≡</button>
         </div>
     </header>
 
     <main class="app-container">
         
         <section class="panel-left">
-            <h2>📁 Pilih Dokumen</h2>
-            
-            <div id="uploadZone" class="upload-zone">
-                <p class="upload-title">Klik atau Tarik dokumen ke sini</p>
-                <p class="upload-subtitle">Mendukung file PNG, JPG, dan PDF</p>
-                <p class="upload-warning">Pemrosesan lokal di memori browser, dokumen Anda tidak diupload ke server mana pun.</p>
-                <input type="file" id="fileInput" accept="image/*,application/pdf" style="display: none;">
-            </div>
-
-            <div class="preview-wrapper">
-                <div id="zoomOverlay" class="zoom-overlay">
-                    <span id="zoomLabel">100%</span>
-                    <input type="range" id="zoomSlider" min="100" max="300" value="100" class="mini-slider">
+            <div class="panel-card">
+                <h2>📁 Pilih Dokumen</h2>
+                
+                <div class="drop-zone">
+                    <p>Klik atau Tarik dokumen ke sini</p>
+                    <span class="drop-zone-note">Mendukung file PNG, JPG, dan PDF</span>
                 </div>
                 
-                <div id="documentPreview" class="document-preview">
-                    </div>
+                <div class="alert-info">
+                    Pemrosesan lokal di memori browser, dokumen Anda tidak diupload ke server mana pun.
+                </div>
+                
+                <div class="preview-controls">
+                    <button type="button" class="zoom-btn">-</button>
+                    <input type="range" class="zoom-slider" min="50" max="150" value="100" id="zoomRange">
+                    <button type="button" class="zoom-btn">+</button>
+                    <span class="zoom-text" id="zoomVal">100%</span>
+                    <button type="button" class="autofit-btn">Auto Fit</button>
+                </div>
+                
+                <div class="preview-container">
+                    <div class="preview-placeholder">Dokumen Preview</div>
+                </div>
             </div>
         </section>
 
         <section class="panel-right">
-            <h2>⚙️ Atur Watermark</h2>
-            
-            <div class="control-group">
-                <label for="watermarkStyle">Style & Pola Penempatan</label>
-                <select id="watermarkStyle">
-                    <option value="center">Teks di Tengah (Cabang 1)</option>
-                    <option value="scattered">Penuh Tersebar (Cabang 2)</option>
-                    <option value="footer">Teks di Bawah</option>
-                </select>
-            </div>
-
-            <div class="control-group">
-                <label for="watermarkText">Teks Watermark</label>
-                <input type="text" id="watermarkText" value="DOKUMEN COPY" placeholder="Masukkan teks watermark...">
-                <div class="template-buttons">
-                    <button type="button" class="btn-template">+ Tanggal</button>
-                    <button type="button" class="btn-template">Untuk Verifikasi</button>
-                    <button type="button" class="btn-template">Dokumen Contoh</button>
+            <div class="panel-card">
+                <h2>⚙️ Atur Watermark</h2>
+                
+                <div class="control-group">
+                    <label for="watermarkStyle">Style & Pola Penempatan</label>
+                    <select id="watermarkStyle" class="form-select">
+                        <option value="penuh">Penuh Tersebar (Cabang 2)</option>
+                        <option value="tengah">Teks di Tengah (Cabang 1)</option>
+                    </select>
                 </div>
-            </div>
 
-            <h3>Tampilan Visual</h3>
-
-            <div class="control-group">
-                <label for="opacitySlider">Transparansi (Opacity)</label>
-                <input type="range" id="opacitySlider" min="10" max="100" value="50">
-            </div>
-
-            <div class="control-group">
-                <label for="fontSizeInput">Ukuran Font (px)</label>
-                <input type="number" id="fontSizeInput" min="10" max="200" value="32">
-            </div>
-
-            <div class="control-group">
-                <label for="rotationSlider">Rotasi Kemiringan</label>
-                <input type="range" id="rotationSlider" min="-90" max="90" value="-30">
-            </div>
-
-            <div class="control-group">
-                <label>Warna Teks</label>
-                <div class="color-picker-container">
-                    <div class="color-circle active" style="background-color: #ff0000;" data-color="255, 0, 0"></div>
-                    <div class="color-circle" style="background-color: #000000;" data-color="0, 0, 0"></div>
-                    <div class="color-circle" style="background-color: #0000ff;" data-color="0, 0, 255"></div>
-                    <div id="customColorBtn" class="color-circle custom-picker-trigger">🎨</div>
-                    <input type="color" id="hiddenColorInput" value="#ff0000" style="display: none;">
+                <div class="control-group">
+                    <label for="watermarkText">Teks Watermark</label>
+                    <input type="text" id="watermarkText" class="form-input" value="DOKUMEN COPY">
+                    <div class="quick-buttons">
+                        <button type="button" class="btn-sub">+ Tanggal</button>
+                        <button type="button" class="btn-sub">Untuk Verifikasi</button>
+                        <button type="button" class="btn-sub">Dokumen Contoh</button>
+                    </div>
                 </div>
-            </div>
 
-            <div class="action-buttons">
-                <button id="btnSave" class="btn-primary">💾 Simpan Dokumen</button>
-                <button id="btnReset" class="btn-secondary">Ulangi Watermark</button>
+                <hr class="section-divider">
+
+                <div class="control-section">
+                    <h3 class="section-title">🎨 TAMPILAN VISUAL</h3>
+                    
+                    <div class="control-group">
+                        <div class="label-row">
+                            <label>Transparansi (Opacity)</label>
+                            <span class="value-badge" id="opacity-val">25%</span>
+                        </div>
+                        <input type="range" id="opacity-slider" class="slider" min="0" max="100" value="25">
+                    </div>
+                    
+                    <div class="two-col-row">
+                        <div class="control-group flex-1">
+                            <label class="sub-label">Ukuran Font (px)</label>
+                            <div class="stepper-input">
+                                <button type="button" class="step-btn" id="font-decrease">-</button>
+                                <input type="text" id="font-size-input" value="32" readonly>
+                                <button type="button" class="step-btn" id="font-increase">+</button>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group flex-1">
+                            <label class="sub-label">Warna Teks</label>
+                            <div class="color-picker-group">
+                                <button type="button" class="color-dot red active" data-color="#ef4444"></button>
+                                <button type="button" class="color-dot black" data-color="#000000"></button>
+                                <button type="button" class="color-dot blue" data-color="#0000ff"></button>
+                                <button type="button" class="color-dot white" data-color="#ffffff"></button>
+                                <button type="button" class="color-dot gradient-picker"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="section-divider">
+
+                <div class="control-section">
+                    <h3 class="section-title">📐 POSISI & POLA</h3>
+                    
+                    <div class="control-group">
+                        <div class="label-row">
+                            <label>Rotasi Kemiringan</label>
+                            <span class="value-badge badge-green" id="rotation-val">-30°</span>
+                        </div>
+                        <input type="range" id="rotation-slider" class="slider" min="-180" max="180" value="-30">
+                    </div>
+                </div>
+
+                <div class="action-group">
+                    <button type="button" class="btn-main">💾 Simpan Dokumen</button>
+                    <button type="button" class="btn-secondary">Ulangi Watermark</button>
+                </div>
             </div>
         </section>
-
     </main>
 
+    <script src="script.js"></script>
 </body>
 </html>
