@@ -244,7 +244,11 @@ watermarkText.addEventListener('input', gambarUlangSistemWatermark);
 watermarkStyle.addEventListener('change', gambarUlangSistemWatermark);
 opacitySlider.addEventListener('input', gambarUlangSistemWatermark);
 fontSizeInput.addEventListener('input', gambarUlangSistemWatermark);
-rotationSlider.addEventListener('input', gambarUlangSistemWatermark);
+rotationSlider.addEventListener('input', gambarUlangSystemsWatermark);
+
+function gambarUlangSystemsWatermark() {
+    gambarUlangSistemWatermark();
+}
 
 colorCircles.forEach((circle) => {
     circle.addEventListener('click', () => {
