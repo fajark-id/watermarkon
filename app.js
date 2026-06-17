@@ -217,7 +217,7 @@ function gambarUlangSistemWatermark() {
         
         const lebarMaksimum = canvas.width - (paddingX * 2);
         const barisKata = teks.split(' ');
-        let barisKalimat Sekarang = '';
+        let barisKalimatSekarang = '';
         const daftarBarisFix = [];
         const tinggiBaris = ukuranFont * 1.3;
 
@@ -320,7 +320,6 @@ btnTemplates.forEach(btn => {
             const thn = dateObj.getFullYear();
             watermarkText.value += ` ${tgl}-${bln}-${thn}`;
         } else if (isiTombol === 'Template Footer') {
-            // Setup otomatis default spec Cabang 3
             const dateObj = new Date();
             const yyyy = dateObj.getFullYear();
             const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -329,16 +328,14 @@ btnTemplates.forEach(btn => {
             watermarkText.value = `Digunakan untuk [keperluan] kepada [pihak penerima] pada [${yyyy}${mm}${dd}]`;
             watermarkStyle.value = 'footer';
             
-            // Set slider visual agar tipis & rapi otomatis sesuai spesifikasi lampiran
             opacitySlider.value = 75;
             opacityVal.innerText = '75%';
             fontSizeInput.value = 14; 
             rotationSlider.value = 0;
             rotationVal.innerText = '0°';
             
-            // Set warna ke hitam
             colorDots.forEach(d => d.classList.remove('active'));
-            colorDots[1].classList.add('active'); // Warna Hitam
+            colorDots[1].classList.add('active'); 
             warnaRGB = '0, 0, 0';
         } else {
             watermarkText.value = isiTombol;
