@@ -174,18 +174,20 @@ function gambarUlangSistemWatermark() {
 
     ctx.font = `bold ${ukuranFont}px Arial, sans-serif`;
     ctx.fillStyle = `rgba(${warnaRGB}, ${transparansi})`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
 
     const pola = watermarkStyle.value;
 
     if (pola === 'center') {
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(kemiringanRad);
         ctx.fillText(teks, 0, 0);
         ctx.restore();
     } else if (pola === 'scattered') {
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(kemiringanRad);
@@ -204,10 +206,44 @@ function gambarUlangSistemWatermark() {
         }
         ctx.restore();
     } else if (pola === 'footer') {
+        // SPESIFIKASI CABANG 3: FOOTER STYLE
         ctx.save();
-        ctx.translate(canvas.width / 2, canvas.height - (ukuranFont * 2));
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'bottom';
+        
+        // Atur padding aman dari ujung kiri dan bawah canvas (proporsional)
+        const paddingX = Math.max(20, canvas.width * 0.03);
+        const paddingY = Math.max(20, canvas.height * 0.04);
+        
+        const lebarMaksimum = canvas.width - (paddingX * 2);
+        const barisKata = teks.split(' ');
+        let barisKalimat Sekarang = '';
+        const daftarBarisFix = [];
+        const tinggiBaris = ukuranFont * 1.3;
+
+        // Algoritma pembungkus teks otomatis (Word Wrapping)
+        for (let n = 0; n < barisKata.length; n++) {
+            let ujiBaris = barisKalimatSekarang + barisKata[n] + ' ';
+            let ukuranUji = ctx.measureText(ujiBaris).width;
+            if (ukuranUji > lebarMaksimum && n > 0) {
+                daftarBarisFix.push(barisKalimatSekarang);
+                barisKalimatSekarang = barisKata[n] + ' ';
+            } else {
+                barisKalimatSekarang = ujiBaris;
+            }
+        }
+        daftarBarisFix.push(barisKalimatSekarang);
+
+        // Hitung titik awal Y agar jika multi-baris naik ke atas secara rapi
+        let titikAwalY = canvas.height - paddingY - ((daftarBarisFix.length - 1) * tinggiBaris);
+
+        ctx.translate(paddingX, titikAwalY);
         ctx.rotate(kemiringanRad);
-        ctx.fillText(teks, 0, 0);
+
+        // Gambar teks per baris hasil wrap
+        for (let i = 0; i < daftarBarisFix.length; i++) {
+            ctx.fillText(daftarBarisFix[i].trim(), 0, i * tinggiBaris);
+        }
         ctx.restore();
     }
 }
@@ -276,12 +312,34 @@ hiddenColorInput.addEventListener('input', (e) => {
 btnTemplates.forEach(btn => {
     btn.addEventListener('click', () => {
         const isiTombol = btn.innerText;
+        
         if (isiTombol === '+ Tanggal') {
             const dateObj = new Date();
             const tgl = String(dateObj.getDate()).padStart(2, '0');
             const bln = String(dateObj.getMonth() + 1).padStart(2, '0');
             const thn = dateObj.getFullYear();
             watermarkText.value += ` ${tgl}-${bln}-${thn}`;
+        } else if (isiTombol === 'Template Footer') {
+            // Setup otomatis default spec Cabang 3
+            const dateObj = new Date();
+            const yyyy = dateObj.getFullYear();
+            const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const dd = String(dateObj.getDate()).padStart(2, '0');
+            
+            watermarkText.value = `Digunakan untuk [keperluan] kepada [pihak penerima] pada [${yyyy}${mm}${dd}]`;
+            watermarkStyle.value = 'footer';
+            
+            // Set slider visual agar tipis & rapi otomatis sesuai spesifikasi lampiran
+            opacitySlider.value = 75;
+            opacityVal.innerText = '75%';
+            fontSizeInput.value = 14; 
+            rotationSlider.value = 0;
+            rotationVal.innerText = '0°';
+            
+            // Set warna ke hitam
+            colorDots.forEach(d => d.classList.remove('active'));
+            colorDots[1].classList.add('active'); // Warna Hitam
+            warnaRGB = '0, 0, 0';
         } else {
             watermarkText.value = isiTombol;
         }
