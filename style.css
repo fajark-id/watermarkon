@@ -160,7 +160,6 @@ input[type="range"] {
 
 /* --- UPLOAD ZONE --- */
 .upload-zone {
-    pointer-events: none;
     background-color: var(--upload-bg);
     border: 2px dashed var(--upload-border);
     border-radius: 0.75rem;
@@ -168,6 +167,11 @@ input[type="range"] {
     text-align: center;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+/* Solusi agar klik menembus teks langsung ke container utama */
+.upload-zone * {
+    pointer-events: none;
 }
 
 .upload-title {
@@ -357,7 +361,7 @@ canvas {
     color: var(--text-main);
 }
 
-/* RESPONSIVE RESPONSIVENESS */
+/* RESPONSIVE LAYOUT */
 @media (max-width: 850px) {
     .app-container {
         flex-direction: column;
