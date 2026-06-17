@@ -1,5 +1,5 @@
 // =========================================================================
-// 1. DEKLARASI SELEKTOR ELEMENT DOM HTML
+// 1. SELEKTOR ELEMENT DOM
 // =========================================================================
 const themeToggle = document.getElementById('themeToggle');
 const uploadZone = document.getElementById('uploadZone');
@@ -23,12 +23,12 @@ const btnReset = document.getElementById('btnReset');
 const zoomSlider = document.getElementById('zoomSlider');
 const zoomLabel = document.getElementById('zoomLabel');
 
-// Variabel Data Internal State Aplikasi
+// State Internal Aplikasi
 let gambarAsliObj = null;
-let warnaRGB = '255, 0, 0'; // Default warna merah (format string untuk canvas)
+let warnaRGB = '255, 0, 0'; 
 let namaFileAsli = 'dokumen_watermark';
 
-// State Kontrol Zoom & Penyeretan Dokumen (Pan-Drag)
+// State Zoom & Drag Pan
 let tingkatZoom = 100;
 let currentX = 0;
 let currentY = 0;
@@ -37,34 +37,29 @@ let startY = 0;
 let isDragging = false;
 
 // =========================================================================
-// 2. MANAGEMENT TEMA VISUAL (DARK & LIGHT MODE)
+// 2. MANAGEMENT TEMA (DARK / LIGHT MODE)
 // =========================================================================
 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     document.body.classList.add('dark-mode');
 }
-
 themeToggle.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
 });
 
 // =========================================================================
-// 3. LOGIKA INTERAKSI UNGGAH DOKUMEN (CLICK / DRAG & DROP)
+// 3. LOGIKA UNGGAH DOKUMEN
 // =========================================================================
 uploadZone.addEventListener('click', () => fileInput.click());
-
 fileInput.addEventListener('change', (e) => {
     if (e.target.files.length > 0) eksekusiProsesFile(e.target.files[0]);
 });
-
 uploadZone.addEventListener('dragover', (e) => {
     e.preventDefault();
     uploadZone.style.borderColor = 'var(--primary-color)';
 });
-
 uploadZone.addEventListener('dragleave', () => {
     uploadZone.style.borderColor = 'var(--upload-border)';
 });
-
 uploadZone.addEventListener('drop', (e) => {
     e.preventDefault();
     uploadZone.style.borderColor = 'var(--upload-border)';
@@ -72,7 +67,7 @@ uploadZone.addEventListener('drop', (e) => {
 });
 
 // =========================================================================
-// 4. MEMPROSES FILE UNTUK DI-RENDER KE CANVAS 2D
+// 4. PEMROSESAN FILE BERKAS
 // =========================================================================
 function eksekusiProsesFile(file) {
     if (!file) return;
@@ -84,7 +79,6 @@ function eksekusiProsesFile(file) {
         reader.onload = function(event) {
             gambarAsliObj = new Image();
             gambarAsliObj.onload = function() {
-                // Reset State Posisi & Zoom Dokumen Menjadi Awal Semula
                 tingkatZoom = 100;
                 currentX = 0;
                 currentY = 0;
@@ -96,7 +90,7 @@ function eksekusiProsesFile(file) {
         };
         reader.readAsDataURL(file);
     } else if (file.type === 'application/pdf') {
-        documentPreview.innerHTML = `<p style="color: var(--text-main); font-size: 0.9rem; text-align:center;">📄 File PDF dimuat: <strong>${file.name}</strong>.<br><span style="color: var(--text-muted); font-size: 0.8rem;">(Fitur render multi-halaman PDF otomatis aktif pada tahap rilis berikutnya).</span></p>`;
+        documentPreview.innerHTML = `<p style="color: var(--text-main); font-size: 0.85rem; text-align:center;">📄 File PDF dimuat: <strong>${file.name}</strong>.<br><span style="color: var(--text-muted); font-size: 0.75rem;">(Render multi-halaman PDF otomatis aktif pada tahap berikutnya).</span></p>`;
     } else {
         documentPreview.innerHTML = '<p style="color: #ef4444; font-weight: bold;">❌ Format berkas tidak didukung!</p>';
     }
@@ -117,7 +111,7 @@ function inisialisasiPapanCanvas() {
 }
 
 // =========================================================================
-// 5. SISTEM ENGINE ZOOM & KURSOR HAND DRAG-TO-PAN
+// 5. SISTEM ENGINE ZOOM & KURSOR PAN DRAG
 // =========================================================================
 zoomSlider.addEventListener('input', (e) => {
     tingkatZoom = parseInt(e.target.value);
@@ -163,7 +157,7 @@ window.addEventListener('mouseup', () => {
 });
 
 // =========================================================================
-// 6. CORE ENGINE RENDER WATERMARK CANVAS
+// 6. ENGINE RENDERING WATERMARK
 // =========================================================================
 function gambarUlangSistemWatermark() {
     const canvas = document.getElementById('papanWatermark');
@@ -171,8 +165,6 @@ function gambarUlangSistemWatermark() {
 
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Gambar ulang dokumen asli dasar
     ctx.drawImage(gambarAsliObj, 0, 0);
 
     const teks = watermarkText.value;
@@ -193,7 +185,6 @@ function gambarUlangSistemWatermark() {
         ctx.rotate(kemiringanRad);
         ctx.fillText(teks, 0, 0);
         ctx.restore();
-
     } else if (pola === 'scattered') {
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
@@ -212,7 +203,6 @@ function gambarUlangSistemWatermark() {
             }
         }
         ctx.restore();
-
     } else if (pola === 'footer') {
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height - (ukuranFont * 2));
@@ -223,7 +213,7 @@ function gambarUlangSistemWatermark() {
 }
 
 // =========================================================================
-// 7. EVENT LISTENER KONTROL INPUT & REALTIME BADGES
+// 7. EVENT LISTENER KONTROL INPUT
 // =========================================================================
 watermarkText.addEventListener('input', gambarUlangSistemWatermark);
 watermarkStyle.addEventListener('change', gambarUlangSistemWatermark);
@@ -238,31 +228,28 @@ rotationSlider.addEventListener('input', (e) => {
     gambarUlangSistemWatermark();
 });
 
-// Kontrol Logika Tombol Font Stepper (- & +)
 fontIncrease.addEventListener('click', () => {
     let ukuranSkrg = parseInt(fontSizeInput.value);
     if (ukuranSkrg < 200) {
-        fontSizeInput.value = ukuranSkrg + 4; // Kelipatan naik 4px biar cepat
+        fontSizeInput.value = ukuranSkrg + 2;
         gambarUlangSistemWatermark();
     }
 });
 
 fontDecrease.addEventListener('click', () => {
     let ukuranSkrg = parseInt(fontSizeInput.value);
-    if (ukuranSkrg > 10) {
-        fontSizeInput.value = ukuranSkrg - 4; // Kelipatan turun 4px
+    if (ukuranSkrg > 6) {
+        fontSizeInput.value = ukuranSkrg - 2;
         gambarUlangSistemWatermark();
     }
 });
 
-// Pilihan Warna Bulat Minimalis
 colorDots.forEach((dot) => {
     dot.addEventListener('click', () => {
         if (dot.id === 'customColorBtn') {
             hiddenColorInput.click();
             return;
         }
-        
         colorDots.forEach(d => d.classList.remove('active'));
         dot.classList.add('active');
         warnaRGB = dot.getAttribute('data-color');
@@ -270,7 +257,6 @@ colorDots.forEach((dot) => {
     });
 });
 
-// Menangkap Input Custom Color Picker Browser
 hiddenColorInput.addEventListener('input', (e) => {
     const hex = e.target.value;
     const r = parseInt(hex.slice(1, 3), 16);
@@ -278,21 +264,18 @@ hiddenColorInput.addEventListener('input', (e) => {
     const b = parseInt(hex.slice(5, 7), 16);
     
     warnaRGB = `${r}, ${g}, ${b}`;
-    
     colorDots.forEach(d => d.classList.remove('active'));
     customColorBtn.classList.add('active');
     customColorBtn.style.background = hex;
-    
     gambarUlangSistemWatermark();
 });
 
 // =========================================================================
-// 8. LOGIKA QUICK TEMPLATE TEKS
+// 8. QUICK TEMPLATES
 // =========================================================================
 btnTemplates.forEach(btn => {
     btn.addEventListener('click', () => {
         const isiTombol = btn.innerText;
-
         if (isiTombol === '+ Tanggal') {
             const dateObj = new Date();
             const tgl = String(dateObj.getDate()).padStart(2, '0');
@@ -307,7 +290,7 @@ btnTemplates.forEach(btn => {
 });
 
 // =========================================================================
-// 9. EVENT TOMBOL RESET ULANG
+// 9. EVENT RESET SYSTEM
 // =========================================================================
 btnReset.addEventListener('click', () => {
     watermarkText.value = 'DOKUMEN COPY';
@@ -333,12 +316,12 @@ btnReset.addEventListener('click', () => {
 });
 
 // =========================================================================
-// 10. EKSPORT & SIMPAN BERKAS KE PENYIMPANAN LOKAL
+// 10. EKSPORT / DOWNLOAD FILE
 // =========================================================================
 btnSave.addEventListener('click', () => {
     const canvas = document.getElementById('papanWatermark');
     if (!canvas || !gambarAsliObj) {
-        alert('Maaf, unggah dokumen gambar terlebih dahulu sebelum disimpan!');
+        alert('Maaf, silakan masukkan dokumen terlebih dahulu.');
         return;
     }
 
