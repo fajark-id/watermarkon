@@ -30,7 +30,7 @@
                 <div id="uploadZone" class="upload-zone">
                     <p class="upload-title">Klik atau Tarik dokumen ke sini</p>
                     <p class="upload-subtitle">Mendukung file PNG, JPG, dan PDF</p>
-                    <p class="upload-warning">Pemrosesan lokal di memori browser, dokumen Anda tidak diupload ke server mana pun.</p>
+                    <p class="upload-warning">Pemrosesan lokal di memori browser, dokumen Anda aman.</p>
                     <input type="file" id="fileInput" accept="image/*,application/pdf" style="display: none;">
                 </div>
 
@@ -52,8 +52,8 @@
                 <div class="control-group">
                     <label for="watermarkStyle">Style & Pola Penempatan</label>
                     <select id="watermarkStyle">
+                        <option value="center" selected>Teks di Tengah (Cabang 1)</option>
                         <option value="scattered">Penuh Tersebar (Cabang 2)</option>
-                        <option value="center">Teks di Tengah (Cabang 1)</option>
                         <option value="footer">Teks di Bawah</option>
                     </select>
                 </div>
@@ -81,7 +81,7 @@
                         <input type="range" id="opacitySlider" min="10" max="100" value="50" class="slider">
                     </div>
                     
-                    <div class="two-col-row">
+                    <div class="compact-row">
                         <div class="control-group flex-1">
                             <label class="sub-label">Ukuran Font (px)</label>
                             <div class="stepper-input">
