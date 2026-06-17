@@ -1,5 +1,5 @@
 // =========================================================================
-// 1. DEKLARASI SELEKTOR DOM ELEMEN HTML
+// 1. DEKLARASI SELEKTOR ELEMENT DOM HTML
 // =========================================================================
 const themeToggle = document.getElementById('themeToggle');
 const uploadZone = document.getElementById('uploadZone');
@@ -8,25 +8,28 @@ const documentPreview = document.getElementById('documentPreview');
 const watermarkStyle = document.getElementById('watermarkStyle');
 const watermarkText = document.getElementById('watermarkText');
 const opacitySlider = document.getElementById('opacitySlider');
-const fontSizeInput = document.getElementById('fontSizeInput');
+const opacityVal = document.getElementById('opacityVal');
 const rotationSlider = document.getElementById('rotationSlider');
-const colorCircles = document.querySelectorAll('.color-circle');
+const rotationVal = document.getElementById('rotationVal');
+const fontSizeInput = document.getElementById('fontSizeInput');
+const fontDecrease = document.getElementById('fontDecrease');
+const fontIncrease = document.getElementById('fontIncrease');
+const colorDots = document.querySelectorAll('.color-dot');
+const customColorBtn = document.getElementById('customColorBtn');
 const hiddenColorInput = document.getElementById('hiddenColorInput'); 
 const btnTemplates = document.querySelectorAll('.btn-template');
 const btnSave = document.getElementById('btnSave');
 const btnReset = document.getElementById('btnReset');
-
-// Selektor Zoom Minimalis Baru
 const zoomSlider = document.getElementById('zoomSlider');
 const zoomLabel = document.getElementById('zoomLabel');
 
-// Variabel Penyimpanan Data Internal Aplikasi
+// Variabel Data Internal State Aplikasi
 let gambarAsliObj = null;
-let warnaRGB = '255, 0, 0';
+let warnaRGB = '255, 0, 0'; // Default warna merah (format string untuk canvas)
 let namaFileAsli = 'dokumen_watermark';
 
-// State Kontrol Zoom & Panning (Geser Layar)
-let tingkatZoom = 100; // Dalam persen (100% - 300%)
+// State Kontrol Zoom & Penyeretan Dokumen (Pan-Drag)
+let tingkatZoom = 100;
 let currentX = 0;
 let currentY = 0;
 let startX = 0;
@@ -34,59 +37,42 @@ let startY = 0;
 let isDragging = false;
 
 // =========================================================================
-// 2. SISTEM MANAGEMENT TEMA (DARK / LIGHT MODE)
+// 2. MANAGEMENT TEMA VISUAL (DARK & LIGHT MODE)
 // =========================================================================
 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     document.body.classList.add('dark-mode');
 }
 
 themeToggle.addEventListener('click', () => {
-    document.body.classList.contains('dark-mode') ? setModeVisual(false) : setModeVisual(true);
+    document.body.classList.toggle('dark-mode');
 });
 
-function setModeVisual(pilihGelap) {
-    if (pilihGelap) {
-        document.body.classList.add('dark-mode');
-    } else {
-        document.body.classList.remove('dark-mode');
-    }
-}
-
 // =========================================================================
-// 3. LOGIKA INTERAKSI UNGGAH DOKUMEN (DRAG-DROP & KLIK)
+// 3. LOGIKA INTERAKSI UNGGAH DOKUMEN (CLICK / DRAG & DROP)
 // =========================================================================
-uploadZone.addEventListener('click', () => {
-    fileInput.click();
-});
+uploadZone.addEventListener('click', () => fileInput.click());
 
 fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) {
-        eksekusiProsesFile(e.target.files[0]);
-    }
+    if (e.target.files.length > 0) eksekusiProsesFile(e.target.files[0]);
 });
 
 uploadZone.addEventListener('dragover', (e) => {
     e.preventDefault();
     uploadZone.style.borderColor = 'var(--primary-color)';
-    uploadZone.style.backgroundColor = 'rgba(22, 163, 74, 0.05)';
 });
 
 uploadZone.addEventListener('dragleave', () => {
     uploadZone.style.borderColor = 'var(--upload-border)';
-    uploadZone.style.backgroundColor = 'var(--upload-bg)';
 });
 
 uploadZone.addEventListener('drop', (e) => {
     e.preventDefault();
     uploadZone.style.borderColor = 'var(--upload-border)';
-    uploadZone.style.backgroundColor = 'var(--upload-bg)';
-    if (e.dataTransfer.files.length > 0) {
-        eksekusiProsesFile(e.dataTransfer.files[0]);
-    }
+    if (e.dataTransfer.files.length > 0) eksekusiProsesFile(e.dataTransfer.files[0]);
 });
 
 // =========================================================================
-// 4. MEMPROSES FILE DAN MERENDER KE CANVAS
+// 4. MEMPROSES FILE UNTUK DI-RENDER KE CANVAS 2D
 // =========================================================================
 function eksekusiProsesFile(file) {
     if (!file) return;
@@ -98,7 +84,7 @@ function eksekusiProsesFile(file) {
         reader.onload = function(event) {
             gambarAsliObj = new Image();
             gambarAsliObj.onload = function() {
-                // Reset Zoom & Posisi Koordinat Seret Setiap Ganti Dokumen Baru
+                // Reset State Posisi & Zoom Dokumen Menjadi Awal Semula
                 tingkatZoom = 100;
                 currentX = 0;
                 currentY = 0;
@@ -110,7 +96,7 @@ function eksekusiProsesFile(file) {
         };
         reader.readAsDataURL(file);
     } else if (file.type === 'application/pdf') {
-        documentPreview.innerHTML = `<p style="color: var(--text-main); font-size: 0.9rem; text-align:center;">📄 File PDF dimuat: <strong>${file.name}</strong>.<br><span style="color: var(--text-muted); font-size: 0.8rem;">(Fitur render PDF otomatis akan aktif pada tahap pengembangan selanjutnya).</span></p>`;
+        documentPreview.innerHTML = `<p style="color: var(--text-main); font-size: 0.9rem; text-align:center;">📄 File PDF dimuat: <strong>${file.name}</strong>.<br><span style="color: var(--text-muted); font-size: 0.8rem;">(Fitur render multi-halaman PDF otomatis aktif pada tahap rilis berikutnya).</span></p>`;
     } else {
         documentPreview.innerHTML = '<p style="color: #ef4444; font-weight: bold;">❌ Format berkas tidak didukung!</p>';
     }
@@ -131,7 +117,7 @@ function inisialisasiPapanCanvas() {
 }
 
 // =========================================================================
-// 5. SISTEM DRAG-TO-PAN (CLICK & DRAG KURSOR HAND) & ZOOM
+// 5. SISTEM ENGINE ZOOM & KURSOR HAND DRAG-TO-PAN
 // =========================================================================
 zoomSlider.addEventListener('input', (e) => {
     tingkatZoom = parseInt(e.target.value);
@@ -148,14 +134,12 @@ function terapkanTransformasiCanvas() {
         documentPreview.classList.add('can-pan');
     } else {
         documentPreview.classList.remove('can-pan');
-        // Kunci balik posisi ke tengah jika kembali ke 100%
         currentX = 0;
         currentY = 0;
     }
     canvas.style.transform = `translate(${currentX}px, ${currentY}px) scale(${tingkatZoom / 100})`;
 }
 
-// Event dragging penyeretan dokumen menggunakan kursor mouse
 documentPreview.addEventListener('mousedown', (e) => {
     if (tingkatZoom <= 100) return;
     isDragging = true;
@@ -179,7 +163,7 @@ window.addEventListener('mouseup', () => {
 });
 
 // =========================================================================
-// 6. ENGINE WATERMARK CANVAS
+// 6. CORE ENGINE RENDER WATERMARK CANVAS
 // =========================================================================
 function gambarUlangSistemWatermark() {
     const canvas = document.getElementById('papanWatermark');
@@ -188,6 +172,7 @@ function gambarUlangSistemWatermark() {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    // Gambar ulang dokumen asli dasar
     ctx.drawImage(gambarAsliObj, 0, 0);
 
     const teks = watermarkText.value;
@@ -238,32 +223,54 @@ function gambarUlangSistemWatermark() {
 }
 
 // =========================================================================
-// 7. EVENT LISTENER KONTROL & WARNA
+// 7. EVENT LISTENER KONTROL INPUT & REALTIME BADGES
 // =========================================================================
 watermarkText.addEventListener('input', gambarUlangSistemWatermark);
 watermarkStyle.addEventListener('change', gambarUlangSistemWatermark);
-opacitySlider.addEventListener('input', gambarUlangSistemWatermark);
-fontSizeInput.addEventListener('input', gambarUlangSistemWatermark);
-rotationSlider.addEventListener('input', gambarUlangSystemsWatermark);
 
-function gambarUlangSystemsWatermark() {
+opacitySlider.addEventListener('input', (e) => {
+    opacityVal.innerText = `${e.target.value}%`;
     gambarUlangSistemWatermark();
-}
+});
 
-colorCircles.forEach((circle) => {
-    circle.addEventListener('click', () => {
-        if (circle.id === 'customColorBtn') {
+rotationSlider.addEventListener('input', (e) => {
+    rotationVal.innerText = `${e.target.value}°`;
+    gambarUlangSistemWatermark();
+});
+
+// Kontrol Logika Tombol Font Stepper (- & +)
+fontIncrease.addEventListener('click', () => {
+    let ukuranSkrg = parseInt(fontSizeInput.value);
+    if (ukuranSkrg < 200) {
+        fontSizeInput.value = ukuranSkrg + 4; // Kelipatan naik 4px biar cepat
+        gambarUlangSistemWatermark();
+    }
+});
+
+fontDecrease.addEventListener('click', () => {
+    let ukuranSkrg = parseInt(fontSizeInput.value);
+    if (ukuranSkrg > 10) {
+        fontSizeInput.value = ukuranSkrg - 4; // Kelipatan turun 4px
+        gambarUlangSistemWatermark();
+    }
+});
+
+// Pilihan Warna Bulat Minimalis
+colorDots.forEach((dot) => {
+    dot.addEventListener('click', () => {
+        if (dot.id === 'customColorBtn') {
             hiddenColorInput.click();
             return;
         }
         
-        colorCircles.forEach(c => c.classList.remove('active'));
-        circle.classList.add('active');
-        warnaRGB = circle.getAttribute('data-color');
+        colorDots.forEach(d => d.classList.remove('active'));
+        dot.classList.add('active');
+        warnaRGB = dot.getAttribute('data-color');
         gambarUlangSistemWatermark();
     });
 });
 
+// Menangkap Input Custom Color Picker Browser
 hiddenColorInput.addEventListener('input', (e) => {
     const hex = e.target.value;
     const r = parseInt(hex.slice(1, 3), 16);
@@ -272,47 +279,49 @@ hiddenColorInput.addEventListener('input', (e) => {
     
     warnaRGB = `${r}, ${g}, ${b}`;
     
-    colorCircles.forEach(c => c.classList.remove('active'));
-    document.getElementById('customColorBtn').classList.add('active');
-    document.getElementById('customColorBtn').style.backgroundColor = hex;
+    colorDots.forEach(d => d.classList.remove('active'));
+    customColorBtn.classList.add('active');
+    customColorBtn.style.background = hex;
     
     gambarUlangSistemWatermark();
 });
 
 // =========================================================================
-// 8. QUICK TEMPLATE TEKS
+// 8. LOGIKA QUICK TEMPLATE TEKS
 // =========================================================================
 btnTemplates.forEach(btn => {
     btn.addEventListener('click', () => {
-        const kontenTombol = btn.innerText;
+        const isiTombol = btn.innerText;
 
-        if (kontenTombol === '+ Tanggal') {
-            const hariIni = new Date();
-            const tgl = String(hariIni.getDate()).padStart(2, '0');
-            const bln = String(hariIni.getMonth() + 1).padStart(2, '0');
-            const thn = hariIni.getFullYear();
+        if (isiTombol === '+ Tanggal') {
+            const dateObj = new Date();
+            const tgl = String(dateObj.getDate()).padStart(2, '0');
+            const bln = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const thn = dateObj.getFullYear();
             watermarkText.value += ` ${tgl}-${bln}-${thn}`;
         } else {
-            watermarkText.value = kontenTombol;
+            watermarkText.value = isiTombol;
         }
         gambarUlangSistemWatermark();
     });
 });
 
 // =========================================================================
-// 9. TOMBOL RESET AWAL
+// 9. EVENT TOMBOL RESET ULANG
 // =========================================================================
 btnReset.addEventListener('click', () => {
     watermarkText.value = 'DOKUMEN COPY';
-    watermarkStyle.value = 'center';
+    watermarkStyle.value = 'scattered';
     opacitySlider.value = 50;
+    opacityVal.innerText = '50%';
     fontSizeInput.value = 32;
     rotationSlider.value = -30;
+    rotationVal.innerText = '-30°';
     warnaRGB = '255, 0, 0';
 
-    colorCircles.forEach(c => c.classList.remove('active'));
-    colorCircles[0].classList.add('active');
-    document.getElementById('customColorBtn').style.backgroundColor = 'var(--bg-main)';
+    colorDots.forEach(d => d.classList.remove('active'));
+    colorDots[0].classList.add('active');
+    customColorBtn.style.background = 'linear-gradient(135deg, #ff0055, #00ffcc, #9900ff)';
 
     tingkatZoom = 100;
     currentX = 0;
@@ -324,30 +333,30 @@ btnReset.addEventListener('click', () => {
 });
 
 // =========================================================================
-// 10. EXPORT & SIMPAN BERKAS (AUTONAME TIMESTAMP)
+// 10. EKSPORT & SIMPAN BERKAS KE PENYIMPANAN LOKAL
 // =========================================================================
 btnSave.addEventListener('click', () => {
     const canvas = document.getElementById('papanWatermark');
     if (!canvas || !gambarAsliObj) {
-        alert('Silakan pilih dokumen terlebih dahulu sebelum disimpan!');
+        alert('Maaf, unggah dokumen gambar terlebih dahulu sebelum disimpan!');
         return;
     }
 
-    const waktuSkrg = new Date();
-    const thn = waktuSkrg.getFullYear();
-    const bln = String(waktuSkrg.getMonth() + 1).padStart(2, '0');
-    const tgl = String(waktuSkrg.getDate()).padStart(2, '0');
-    const jam = String(waktuSkrg.getHours()).padStart(2, '0');
-    const mnt = String(waktuSkrg.getMinutes()).padStart(2, '0');
+    const waktu = new Date();
+    const thn = waktu.getFullYear();
+    const bln = String(waktu.getMonth() + 1).padStart(2, '0');
+    const tgl = String(waktu.getDate()).padStart(2, '0');
+    const jam = String(waktu.getHours()).padStart(2, '0');
+    const mnt = String(waktu.getMinutes()).padStart(2, '0');
     
-    const formatWaktu = `${thn}${bln}${tgl}_${jam}${mnt}`;
-    const namaUnduhanBaru = `${formatWaktu}_${namaFileAsli}.png`;
+    const timestamp = `${thn}${bln}${tgl}_${jam}${mnt}`;
+    const namaUnduhan = `${timestamp}_${namaFileAsli}.png`;
 
-    const linkDownload = document.createElement('a');
-    linkDownload.download = namaUnduhanBaru;
-    linkDownload.href = canvas.toDataURL('image/png');
+    const triggerLink = document.createElement('a');
+    triggerLink.download = namaUnduhan;
+    triggerLink.href = canvas.toDataURL('image/png');
     
-    document.body.appendChild(linkDownload);
-    linkDownload.click();
-    document.body.removeChild(linkDownload);
+    document.body.appendChild(triggerLink);
+    triggerLink.click();
+    document.body.removeChild(triggerLink);
 });
