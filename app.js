@@ -5,7 +5,6 @@ const uploadZone = document.getElementById('uploadZone');
 const fileInput = document.getElementById('fileInput');
 const documentPreview = document.getElementById('documentPreview');
 
-// Elemen Kontrol Watermark
 const watermarkText = document.getElementById('watermarkText');
 const opacitySlider = document.getElementById('opacitySlider');
 const fontSizeInput = document.getElementById('fontSizeInput');
@@ -13,15 +12,12 @@ const rotationSlider = document.getElementById('rotationSlider');
 const watermarkStyle = document.getElementById('watermarkStyle');
 const colorCircles = document.querySelectorAll('.color-circle');
 
-// Tombol Aksi & Template
 const btnTemplates = document.querySelectorAll('.btn-template');
 const btnReset = document.getElementById('btnReset');
 
-// Variabel Global
 let gambarAsliObj = null; 
-let warnaRGB = '255, 0, 0'; // Default: Merah
+let warnaRGB = '255, 0, 0'; 
 
-// Input warna tersembunyi untuk tombol 🎨
 const hiddenColorInput = document.createElement('input');
 hiddenColorInput.type = 'color';
 hiddenColorInput.value = '#dc2626';
@@ -71,7 +67,7 @@ function prosesFileYangDipilih(file) {
         };
         reader.readAsDataURL(file);
     } else if (file.type === 'application/pdf') {
-        documentPreview.innerHTML = `<p style="color: #0f172a;">📄 File PDF berhasil dimuat: <strong>${file.name}</strong>.<br><span style="font-size: 0.85rem; color: #64748b;">(Render PDF akan aktif di tahap berikutnya).</span></p>`;
+        documentPreview.innerHTML = `<p style="color: #0f172a;">📄 File PDF berhasil dimuat: <strong>${file.name}</strong>.<br><span style="font-size: 0.85rem; color: #64748b;">(Render PDF akan diaktifkan nanti).</span></p>`;
     } else {
         documentPreview.innerHTML = '<p style="color: #dc2626;">❌ Format file tidak didukung!</p>';
     }
@@ -99,7 +95,7 @@ function buatPapanPratinjau() {
 }
 
 // ==========================================
-// 5. FUNGSI UTAMA: MENGGAMBAR WATERMARK (REAL-TIME)
+// 5. FUNGSI UTAMA: MENGGAMBAR WATERMARK 
 // ==========================================
 function gambarUlangWatermark() {
     const canvas = document.getElementById('papanWatermark');
@@ -107,6 +103,7 @@ function gambarUlangWatermark() {
 
     const ctx = canvas.getContext('2d');
 
+    // Bersihkan layar & gambar dokumen asli
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(gambarAsliObj, 0, 0);
 
@@ -120,15 +117,50 @@ function gambarUlangWatermark() {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    const pola = watermarkStyle.value;
+    // Periksa pilihan pola dari dropdown HTML
+    // Pastikan di index.html value-nya adalah "center", "scattered", "footer"
+    const pola = watermarkStyle.value; 
 
     if (pola === 'center') {
+        // --- CABANG 1: TEKS DI TENGAH ---
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(kemiringan);
         ctx.fillText(teks, 0, 0);
         ctx.restore();
+
+    } else if (pola === 'scattered') {
+        // --- CABANG 2: PENUH TERSEBAR ---
+        ctx.save();
+        // Pindah titik pusat rotasi ke tengah dokumen
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(kemiringan);
+
+        // Hitung lebar teks untuk menentukan jarak (gap) antar watermark
+        const metrikTeks = ctx.measureText(teks);
+        const lebarTeks = metrikTeks.width;
+        
+        // Jarak aman agar teks tidak saling tumpuk
+        const jarakX = lebarTeks + 100; 
+        const jarakY = ukuranFont + 120; 
+
+        // Area perluasan (2x lipat ukuran canvas) agar sudut aman dari area kosong saat diputar
+        const batasArea = Math.max(canvas.width, canvas.height) * 2;
+
+        // Cetak teks berulang-ulang seperti jaring/grid
+        for (let x = -batasArea; x <= batasArea; x += jarakX) {
+            for (let y = -batasArea; y <= batasArea; y += jarakY) {
+                // Efek susun bata: geser baris ganjil sedikit ke kanan
+                let barisGanjil = Math.abs(Math.round(y / jarakY)) % 2 === 1;
+                let geserX = barisGanjil ? (jarakX / 2) : 0;
+                
+                ctx.fillText(teks, x + geserX, y);
+            }
+        }
+        ctx.restore();
+
     } else {
+        // --- CABANG 3: FOOTER (Akan diaktifkan selanjutnya) ---
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(kemiringan);
@@ -151,18 +183,12 @@ colorCircles.forEach((circle, index) => {
         colorCircles.forEach(c => c.classList.remove('active'));
         circle.classList.add('active');
 
-        if (index === 0) {
-            warnaRGB = '255, 0, 0'; // Merah
-            gambarUlangWatermark();
-        } else if (index === 1) {
-            warnaRGB = '0, 0, 0'; // Hitam
-            gambarUlangWatermark();
-        } else if (index === 2) {
-            warnaRGB = '0, 0, 255'; // Biru
-            gambarUlangWatermark();
-        } else if (index === 3) {
-            hiddenColorInput.click();
-        }
+        if (index === 0) warnaRGB = '255, 0, 0';
+        else if (index === 1) warnaRGB = '0, 0, 0';
+        else if (index === 2) warnaRGB = '0, 0, 255';
+        else if (index === 3) hiddenColorInput.click();
+        
+        gambarUlangWatermark();
     });
 });
 
@@ -176,47 +202,38 @@ hiddenColorInput.addEventListener('input', (e) => {
 });
 
 // ==========================================
-// 7. FITUR BARU: LOGIKA TOMBOL TEMPLATE TEKS
+// 7. LOGIKA TOMBOL TEMPLATE TEKS
 // ==========================================
 btnTemplates.forEach(btn => {
     btn.addEventListener('click', () => {
         const isiTombol = btn.innerText;
 
         if (isiTombol === '+ Tanggal') {
-            // Ambil tanggal hari ini secara otomatis (Format Indo: DD-MM-YYYY)
             const hariIni = new Date();
             const tgl = String(hariIni.getDate()).padStart(2, '0');
             const bln = String(hariIni.getMonth() + 1).padStart(2, '0');
             const thn = hariIni.getFullYear();
-            
-            // Tambahkan tanggal di ujung teks yang sudah ada
             watermarkText.value += ` ${tgl}-${bln}-${thn}`;
         } else {
-            // Ganti total teks dengan template instant
             watermarkText.value = isiTombol;
         }
-
-        // Gambar ulang agar teks baru langsung muncul di layar
         gambarUlangWatermark();
     });
 });
 
 // ==========================================
-// 8. FITUR BARU: LOGIKA TOMBOL RESET (ULANGI)
+// 8. LOGIKA TOMBOL RESET (ULANGI)
 // ==========================================
 btnReset.addEventListener('click', () => {
-    // Kembalikan semua nilai input ke standar awal
     watermarkText.value = 'DOKUMEN COPY';
     opacitySlider.value = 50;
     fontSizeInput.value = 32;
     rotationSlider.value = -30;
     watermarkStyle.value = 'center';
-    warnaRGB = '255, 0, 0'; // Kembali ke merah
+    warnaRGB = '255, 0, 0'; 
 
-    // Reset tombol warna aktif ke lingkaran merah (index 0)
     colorCircles.forEach(c => c.classList.remove('active'));
     colorCircles[0].classList.add('active');
 
-    // Gambar ulang kondisi bersih ini ke canvas
     gambarUlangWatermark();
 });
