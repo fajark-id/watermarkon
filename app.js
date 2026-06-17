@@ -13,17 +13,21 @@ const rotationSlider = document.getElementById('rotationSlider');
 const watermarkStyle = document.getElementById('watermarkStyle');
 const colorCircles = document.querySelectorAll('.color-circle');
 
+// Tombol Aksi & Template
+const btnTemplates = document.querySelectorAll('.btn-template');
+const btnReset = document.getElementById('btnReset');
+
 // Variabel Global
 let gambarAsliObj = null; 
-let warnaRGB = '255, 0, 0'; // Default: Merah (Format: R, G, B)
+let warnaRGB = '255, 0, 0'; // Default: Merah
 
-// Membuat input warna tersembunyi khusus untuk tombol kustom 🎨
+// Input warna tersembunyi untuk tombol 🎨
 const hiddenColorInput = document.createElement('input');
 hiddenColorInput.type = 'color';
-hiddenColorInput.value = '#2e7d32'; // Default warna kustom awal (Hijau)
+hiddenColorInput.value = '#dc2626';
 
 // ==========================================
-// 2. LOGIKA UTAMA AMBIL FILE (KLIK & DRAG-DROP)
+// 2. LOGIKA AMBIL FILE (KLIK & DRAG-DROP)
 // ==========================================
 uploadZone.addEventListener('click', () => fileInput.click());
 
@@ -33,18 +37,18 @@ fileInput.addEventListener('change', (e) => {
 
 uploadZone.addEventListener('dragover', (e) => {
     e.preventDefault();
-    uploadZone.style.borderColor = '#2e7d32';
+    uploadZone.style.borderColor = '#16a34a';
     uploadZone.style.backgroundColor = '#f0fdf4';
 });
 
 uploadZone.addEventListener('dragleave', () => {
-    uploadZone.style.borderColor = '#b4c6d8';
+    uploadZone.style.borderColor = '#cbd5e1';
     uploadZone.style.backgroundColor = '#f8fafc';
 });
 
 uploadZone.addEventListener('drop', (e) => {
     e.preventDefault();
-    uploadZone.style.borderColor = '#b4c6d8';
+    uploadZone.style.borderColor = '#cbd5e1';
     uploadZone.style.backgroundColor = '#f8fafc';
     prosesFileYangDipilih(e.dataTransfer.files[0]);
 });
@@ -67,9 +71,9 @@ function prosesFileYangDipilih(file) {
         };
         reader.readAsDataURL(file);
     } else if (file.type === 'application/pdf') {
-        documentPreview.innerHTML = `<p style="color: #2c3e50;">📄 File PDF berhasil dimuat: <strong>${file.name}</strong>.<br><span style="font-size: 0.85rem; color: #7f8c8d;">(Logika render PDF akan diaktifkan setelah fitur gambar beres).</span></p>`;
+        documentPreview.innerHTML = `<p style="color: #0f172a;">📄 File PDF berhasil dimuat: <strong>${file.name}</strong>.<br><span style="font-size: 0.85rem; color: #64748b;">(Render PDF akan aktif di tahap berikutnya).</span></p>`;
     } else {
-        documentPreview.innerHTML = '<p style="color: #e74c3c;">❌ Format file tidak didukung!</p>';
+        documentPreview.innerHTML = '<p style="color: #dc2626;">❌ Format file tidak didukung!</p>';
     }
 }
 
@@ -78,7 +82,6 @@ function prosesFileYangDipilih(file) {
 // ==========================================
 function buatPapanPratinjau() {
     if (!gambarAsliObj) return;
-
     documentPreview.innerHTML = ''; 
 
     const canvas = document.createElement('canvas');
@@ -104,17 +107,14 @@ function gambarUlangWatermark() {
 
     const ctx = canvas.getContext('2d');
 
-    // Menggambar ulang dokumen asli di latar belakang
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(gambarAsliObj, 0, 0);
 
-    // Mengambil nilai dari komponen kontrol
     const teks = watermarkText.value;
     const ukuranFont = parseInt(fontSizeInput.value) || 32;
     const transparansi = opacitySlider.value / 100; 
     const kemiringan = (rotationSlider.value * Math.PI) / 180; 
 
-    // Atur gaya tulisan menggunakan variabel warnaRGB yang dinamis
     ctx.font = `bold ${ukuranFont}px Arial, sans-serif`;
     ctx.fillStyle = `rgba(${warnaRGB}, ${transparansi})`; 
     ctx.textAlign = 'center';
@@ -129,7 +129,6 @@ function gambarUlangWatermark() {
         ctx.fillText(teks, 0, 0);
         ctx.restore();
     } else {
-        // Pola Cabang 2 & 3 akan kita integrasikan di langkah berikutnya
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(kemiringan);
@@ -139,7 +138,7 @@ function gambarUlangWatermark() {
 }
 
 // ==========================================
-// 6. MENGHUBUNGKAN TOMBOL SETINGAN & PALET WARNA
+// 6. MENGHUBUNGKAN EVENT KONTROL & WARNA
 // ==========================================
 watermarkText.addEventListener('input', gambarUlangWatermark);
 opacitySlider.addEventListener('input', gambarUlangWatermark);
@@ -147,15 +146,11 @@ fontSizeInput.addEventListener('input', gambarUlangWatermark);
 rotationSlider.addEventListener('input', gambarUlangWatermark);
 watermarkStyle.addEventListener('change', gambarUlangWatermark);
 
-// Logika Klik pada Bulatan Warna
 colorCircles.forEach((circle, index) => {
     circle.addEventListener('click', () => {
-        // Hilangkan efek lingkaran aktif dari semua tombol warna
         colorCircles.forEach(c => c.classList.remove('active'));
-        // Berikan efek lingkaran aktif ke tombol yang diklik
         circle.classList.add('active');
 
-        // Ganti nilai warna berdasarkan tombol yang dipilih
         if (index === 0) {
             warnaRGB = '255, 0, 0'; // Merah
             gambarUlangWatermark();
@@ -166,21 +161,62 @@ colorCircles.forEach((circle, index) => {
             warnaRGB = '0, 0, 255'; // Biru
             gambarUlangWatermark();
         } else if (index === 3) {
-            // Jika memilih palet kustom 🎨, pancing input warna bawaan sistem keluar
             hiddenColorInput.click();
         }
     });
 });
 
-// Ketika user selesai memilih warna dari jendela kustom pop-up
 hiddenColorInput.addEventListener('input', (e) => {
-    const hex = e.target.value; // Hasil berbentuk Hex (#ff0000)
-    
-    // Konversi nilai Hex ke format RGB agar serasi dengan opacity canvas
+    const hex = e.target.value;
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
-    
     warnaRGB = `${r}, ${g}, ${b}`;
+    gambarUlangWatermark();
+});
+
+// ==========================================
+// 7. FITUR BARU: LOGIKA TOMBOL TEMPLATE TEKS
+// ==========================================
+btnTemplates.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const isiTombol = btn.innerText;
+
+        if (isiTombol === '+ Tanggal') {
+            // Ambil tanggal hari ini secara otomatis (Format Indo: DD-MM-YYYY)
+            const hariIni = new Date();
+            const tgl = String(hariIni.getDate()).padStart(2, '0');
+            const bln = String(hariIni.getMonth() + 1).padStart(2, '0');
+            const thn = hariIni.getFullYear();
+            
+            // Tambahkan tanggal di ujung teks yang sudah ada
+            watermarkText.value += ` ${tgl}-${bln}-${thn}`;
+        } else {
+            // Ganti total teks dengan template instant
+            watermarkText.value = isiTombol;
+        }
+
+        // Gambar ulang agar teks baru langsung muncul di layar
+        gambarUlangWatermark();
+    });
+});
+
+// ==========================================
+// 8. FITUR BARU: LOGIKA TOMBOL RESET (ULANGI)
+// ==========================================
+btnReset.addEventListener('click', () => {
+    // Kembalikan semua nilai input ke standar awal
+    watermarkText.value = 'DOKUMEN COPY';
+    opacitySlider.value = 50;
+    fontSizeInput.value = 32;
+    rotationSlider.value = -30;
+    watermarkStyle.value = 'center';
+    warnaRGB = '255, 0, 0'; // Kembali ke merah
+
+    // Reset tombol warna aktif ke lingkaran merah (index 0)
+    colorCircles.forEach(c => c.classList.remove('active'));
+    colorCircles[0].classList.add('active');
+
+    // Gambar ulang kondisi bersih ini ke canvas
     gambarUlangWatermark();
 });
