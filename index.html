@@ -5,49 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watermarkon - Watermark Lokal & Aman</title>
     <link rel="stylesheet" href="style.css">
-
-    <style>
-    /* Aturan Global Dark Mode */
-        body.dark-theme {
-            background-color: #0f172a !important;
-            color: #f8fafc !important;
-        }
-        body.dark-theme .bg-white {
-            background-color: #1e293b !important;
-            color: #f8fafc !important;
-        }
-        body.dark-theme h1, body.dark-theme h2, body.dark-theme h3, body.dark-theme label, body.dark-theme p {
-            color: #f1f5f9 !important;
-        }
-        body.dark-theme input, body.dark-theme select {
-            background-color: #334155 !important;
-            color: #ffffff !important;
-            border-color: #475569 !important;
-        }
-        body.dark-theme .dark-btn-spec, body.dark-theme .dark-zoom-spec {
-            background-color: #334155 !important;
-            color: #ffffff !important;
-            border-color: #475569 !important;
-        }
-        body.dark-theme #uploadZone {
-            background-color: #1e293b !important;
-            border-color: #475569 !important;
-        }
-    </style>
 </head>
 <body>
 
     <header class="main-header">
         <div class="logo-area">
             <h1>WATERMARKON 🍉</h1>
-            <button id="themeToggle" class="flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors border rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 dark-btn-spec">
-                <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
-            </button>
             <p>Watermark otomatis langsung dari browser.</p>
         </div>
         <div class="header-controls">
-            <button id="themeToggle">☀️/🌙</button>
-            <button id="menuBurger">☰</button>
+            <button id="themeToggle" class="btn-icon">☀️/🌙</button>
+            <button id="menuBurger" class="btn-icon">☰</button>
         </div>
     </header>
 
@@ -56,31 +24,23 @@
         <section class="panel-left">
             <h2>📁 Pilih Dokumen</h2>
             
-            <div class="upload-zone" id="uploadZone">
-                <p>Klik atau Tarik dokumen ke sini</p>
-                <span>Mendukung file PNG, JPG, dan PDF</span>
-                <input type="file" id="fileInput" accept="image/*,.pdf" style="display: none;">
+            <div id="uploadZone" class="upload-zone">
+                <p class="upload-title">Klik atau Tarik dokumen ke sini</p>
+                <p class="upload-subtitle">Mendukung file PNG, JPG, dan PDF</p>
+                <p class="upload-warning">Pemrosesan lokal di memori browser, dokumen Anda tidak diupload ke server mana pun.</p>
             </div>
-            
-            <p class="note">Pemrosesan lokal di memori browser, dokumen Anda tidak diupload ke server mana pun.</p>
 
-            <div class="flex items-center justify-center gap-2 p-2 mb-3 rounded-lg bg-slate-100 dark-zoom-spec">
-                <button id="btnZoomOut" class="px-3 py-1 font-bold bg-white border rounded shadow-sm hover:bg-slate-50 text-slate-700">-</button>
-                <span id="zoomLabel" class="text-sm font-medium text-center text-slate-600 min-w-[50px]">100%</span>
-                <button id="btnZoomIn" class="px-3 py-1 font-bold bg-white border rounded shadow-sm hover:bg-slate-50 text-slate-700">+</button>
-                <button id="btnZoomFit" class="px-2 py-1 text-xs text-slate-600 bg-slate-200 rounded hover:bg-slate-300">Auto Fit</button>
-            </div>
-            
-            <div class="preview-container">
-                <div class="zoom-controls">
-                    <button id="zoomOut">-</button>
-                    <input type="range" id="zoomSlider" min="50" max="150" value="100">
-                    <button id="zoomIn">+</button>
+            <div class="zoom-container">
+                <div class="zoom-controls-row">
+                    <button id="btnZoomOut" class="btn-zoom">-</button>
+                    <input type="range" id="zoomSlider" min="30" max="200" value="100" class="zoom-slider">
+                    <button id="btnZoomIn" class="btn-zoom">+</button>
                 </div>
-                <div class="document-preview" id="documentPreview">
-                    <p>Dokumen Auto fit to page</p>
-                    </div>
+                <button id="btnZoomFit" class="btn-text-link">Dokumen Auto fit to page (<span id="zoomLabel">100%</span>)</button>
             </div>
+
+            <div id="documentPreview" class="document-preview">
+                </div>
         </section>
 
         <section class="panel-right">
@@ -91,38 +51,44 @@
                 <select id="watermarkStyle">
                     <option value="center">Teks di Tengah (Cabang 1)</option>
                     <option value="scattered">Penuh Tersebar (Cabang 2)</option>
-                    <option value="footer">Footer Style (Cabang 3)</option>
+                    <option value="footer">Teks di Bawah</option>
                 </select>
             </div>
 
             <div class="control-group">
                 <label for="watermarkText">Teks Watermark</label>
-                <input type="text" id="watermarkText" value="DOKUMEN COPY">
-                <div class="text-templates">
+                <input type="text" id="watermarkText" value="DOKUMEN COPY" placeholder="Masukkan teks watermark...">
+                <div class="template-buttons">
                     <button type="button" class="btn-template">+ Tanggal</button>
                     <button type="button" class="btn-template">Untuk Verifikasi</button>
                     <button type="button" class="btn-template">Dokumen Contoh</button>
                 </div>
             </div>
 
+            <h3>Tampilan Visual</h3>
+
             <div class="control-group">
-                <h3>Tampilan Visual</h3>
-                
                 <label for="opacitySlider">Transparansi (Opacity)</label>
                 <input type="range" id="opacitySlider" min="10" max="100" value="50">
+            </div>
 
+            <div class="control-group">
                 <label for="fontSizeInput">Ukuran Font (px)</label>
-                <input type="number" id="fontSizeInput" value="32">
+                <input type="number" id="fontSizeInput" min="10" max="200" value="32">
+            </div>
 
+            <div class="control-group">
                 <label for="rotationSlider">Rotasi Kemiringan</label>
-                <input type="range" id="rotationSlider" min="-180" max="180" value="-30">
+                <input type="range" id="rotationSlider" min="-90" max="90" value="-30">
+            </div>
 
+            <div class="control-group">
                 <label>Warna Teks</label>
-                <div class="color-palette">
-                    <span class="color-circle active" style="background-color: red;"></span>
-                    <span class="color-circle" style="background-color: black;"></span>
-                    <span class="color-circle" style="background-color: blue;"></span>
-                    <span class="color-circle" style="background-color: custom;">🎨</span>
+                <div class="color-picker-container">
+                    <div class="color-circle active" style="background-color: #ff0000;" data-color="255, 0, 0"></div>
+                    <div class="color-circle" style="background-color: #000000;" data-color="0, 0, 0"></div>
+                    <div class="color-circle" style="background-color: #0000ff;" data-color="0, 0, 255"></div>
+                    <div id="customColorBtn" class="color-circle custom-picker-trigger">🎨</div>
                 </div>
             </div>
 
@@ -134,6 +100,5 @@
 
     </main>
 
-    <script src="app.js"></script>
 </body>
 </html>
