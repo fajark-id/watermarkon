@@ -11,9 +11,16 @@ const opacitySlider = document.getElementById('opacitySlider');
 const fontSizeInput = document.getElementById('fontSizeInput');
 const rotationSlider = document.getElementById('rotationSlider');
 const watermarkStyle = document.getElementById('watermarkStyle');
+const colorCircles = document.querySelectorAll('.color-circle');
 
-// Variabel global untuk menyimpan data gambar yang sedang dibuka
+// Variabel Global
 let gambarAsliObj = null; 
+let warnaRGB = '255, 0, 0'; // Default: Merah (Format: R, G, B)
+
+// Membuat input warna tersembunyi khusus untuk tombol kustom 🎨
+const hiddenColorInput = document.createElement('input');
+hiddenColorInput.type = 'color';
+hiddenColorInput.value = '#2e7d32'; // Default warna kustom awal (Hijau)
 
 // ==========================================
 // 2. LOGIKA UTAMA AMBIL FILE (KLIK & DRAG-DROP)
@@ -54,7 +61,6 @@ function prosesFileYangDipilih(file) {
         reader.onload = function(event) {
             gambarAsliObj = new Image();
             gambarAsliObj.onload = function() {
-                // Setelah gambar sukses dimuat di memori, buat papan gambar (Canvas)
                 buatPapanPratinjau();
             };
             gambarAsliObj.src = event.target.result;
@@ -73,23 +79,19 @@ function prosesFileYangDipilih(file) {
 function buatPapanPratinjau() {
     if (!gambarAsliObj) return;
 
-    documentPreview.innerHTML = ''; // Bersihkan tulisan panduan lama
+    documentPreview.innerHTML = ''; 
 
     const canvas = document.createElement('canvas');
     canvas.id = 'papanWatermark';
     
-    // Samakan ukuran papan dengan ukuran asli dokumen/foto agar kualitas tidak pecah
     canvas.width = gambarAsliObj.width;
     canvas.height = gambarAsliObj.height;
 
-    // Atur gaya tampilan di layar agar pas secara otomatis (Auto Fit)
     canvas.style.maxWidth = '100%';
     canvas.style.maxHeight = '100%';
     canvas.style.objectFit = 'contain';
 
     documentPreview.appendChild(canvas);
-
-    // Jalankan fungsi cetak teks watermark pertama kali
     gambarUlangWatermark();
 }
 
@@ -102,37 +104,32 @@ function gambarUlangWatermark() {
 
     const ctx = canvas.getContext('2d');
 
-    // Langkah A: Bersihkan papan dan gambar ulang foto asli sebagai latar belakang
+    // Menggambar ulang dokumen asli di latar belakang
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(gambarAsliObj, 0, 0);
 
-    // Langkah B: Ambil nilai-nilai dari tombol setingan di panel kanan
+    // Mengambil nilai dari komponen kontrol
     const teks = watermarkText.value;
     const ukuranFont = parseInt(fontSizeInput.value) || 32;
-    const transparansi = opacitySlider.value / 100; // Ubah skala 10-100 jadi 0.1 - 1.0
-    const kemiringan = (rotationSlider.value * Math.PI) / 180; // Ubah derajat ke rumus sudut matematika
+    const transparansi = opacitySlider.value / 100; 
+    const kemiringan = (rotationSlider.value * Math.PI) / 180; 
 
-    // Langkah C: Atur gaya tulisan watermark
+    // Atur gaya tulisan menggunakan variabel warnaRGB yang dinamis
     ctx.font = `bold ${ukuranFont}px Arial, sans-serif`;
-    ctx.fillStyle = `rgba(255, 0, 0, ${transparansi})`; // Sementara warna merah bawaan default dulu
+    ctx.fillStyle = `rgba(${warnaRGB}, ${transparansi})`; 
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Langkah D: Cetak sesuai Pola/Style Penempatan
     const pola = watermarkStyle.value;
 
     if (pola === 'center') {
-        // --- CABANG 1: TEKS DI TENGAH ---
         ctx.save();
-        // Pindahkan titik pusat gambar ke tengah-tengah papan
         ctx.translate(canvas.width / 2, canvas.height / 2);
-        // Putar papan sesuai slider kemiringan
         ctx.rotate(kemiringan);
-        // Cetak teks tepat di titik tengah (0,0)
         ctx.fillText(teks, 0, 0);
         ctx.restore();
     } else {
-        // Catatan: Untuk Cabang 2 (Tersebar) dan Cabang 3 (Footer) akan aktif setelah ini
+        // Pola Cabang 2 & 3 akan kita integrasikan di langkah berikutnya
         ctx.save();
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(kemiringan);
@@ -142,12 +139,48 @@ function gambarUlangWatermark() {
 }
 
 // ==========================================
-// 6. MENGHUBUNGKAN TOMBOL SETINGAN AGAR RESPONSIV
+// 6. MENGHUBUNGKAN TOMBOL SETINGAN & PALET WARNA
 // ==========================================
-
-// Setiap kali teks diketik, slider digeser, atau ukuran font diganti, langsung gambar ulang!
 watermarkText.addEventListener('input', gambarUlangWatermark);
 opacitySlider.addEventListener('input', gambarUlangWatermark);
 fontSizeInput.addEventListener('input', gambarUlangWatermark);
 rotationSlider.addEventListener('input', gambarUlangWatermark);
 watermarkStyle.addEventListener('change', gambarUlangWatermark);
+
+// Logika Klik pada Bulatan Warna
+colorCircles.forEach((circle, index) => {
+    circle.addEventListener('click', () => {
+        // Hilangkan efek lingkaran aktif dari semua tombol warna
+        colorCircles.forEach(c => c.classList.remove('active'));
+        // Berikan efek lingkaran aktif ke tombol yang diklik
+        circle.classList.add('active');
+
+        // Ganti nilai warna berdasarkan tombol yang dipilih
+        if (index === 0) {
+            warnaRGB = '255, 0, 0'; // Merah
+            gambarUlangWatermark();
+        } else if (index === 1) {
+            warnaRGB = '0, 0, 0'; // Hitam
+            gambarUlangWatermark();
+        } else if (index === 2) {
+            warnaRGB = '0, 0, 255'; // Biru
+            gambarUlangWatermark();
+        } else if (index === 3) {
+            // Jika memilih palet kustom 🎨, pancing input warna bawaan sistem keluar
+            hiddenColorInput.click();
+        }
+    });
+});
+
+// Ketika user selesai memilih warna dari jendela kustom pop-up
+hiddenColorInput.addEventListener('input', (e) => {
+    const hex = e.target.value; // Hasil berbentuk Hex (#ff0000)
+    
+    // Konversi nilai Hex ke format RGB agar serasi dengan opacity canvas
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    
+    warnaRGB = `${r}, ${g}, ${b}`;
+    gambarUlangWatermark();
+});
